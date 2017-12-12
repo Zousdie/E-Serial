@@ -1,0 +1,109 @@
+﻿<Controls:MetroWindow
+    x:Class="E_Serial.NewConn"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:Controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
+    xmlns:local="clr-namespace:E_Serial"
+    mc:Ignorable="d"
+    Title="New Connection"
+    TitleAlignment="Center"
+    ShowCloseButton="False"
+    ShowMinButton="False"
+    ShowMaxRestoreButton="False"
+    WindowStartupLocation="CenterScreen"
+    Width="260"
+    Height="400"
+    HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" ScrollViewer.VerticalScrollBarVisibility="Auto" MaxWidth="260" MaxHeight="400" MinHeight="400" MinWidth="260" Loaded="MetroWindow_Loaded">
+
+    <Grid Margin="15 10 15 10">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="30"/>
+        </Grid.RowDefinitions>
+        <Grid Grid.Row="0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*" />
+                <RowDefinition Height="3*" />
+                <RowDefinition Height="2*" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+            <Grid Grid.Row="0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="60" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <TextBlock Grid.Column="0" Text="Type" HorizontalAlignment="Left" VerticalAlignment="Center" />
+                <ComboBox x:Name="comboBox_Type" SelectedValue="{Binding Type}" Grid.Column="1" Margin="10 0" VerticalAlignment="Center"/>
+            </Grid>
+            <Grid x:Name="grid_Serial" Grid.Row="1">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="60" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+                <TextBlock Grid.Row="0" Grid.Column="0" Text="Baud Rate" HorizontalAlignment="Left" VerticalAlignment="Center" />
+                <ComboBox x:Name="comboBox_BaudRate" SelectedValue="{Binding BaudRate}" Grid.Row="0" Grid.Column="1" Margin="10 0" VerticalAlignment="Center">
+                    <ComboBoxItem IsSelected="True">115200</ComboBoxItem>
+                    <ComboBoxItem>57600</ComboBoxItem>
+                    <ComboBoxItem>38400</ComboBoxItem>
+                    <ComboBoxItem>19200</ComboBoxItem>
+                    <ComboBoxItem>9600</ComboBoxItem>
+                    <ComboBoxItem>4800</ComboBoxItem>
+                    <ComboBoxItem>1200</ComboBoxItem>
+                    <ComboBoxItem>100</ComboBoxItem>
+                </ComboBox>
+                <TextBlock Grid.Row="1" Grid.Column="0" Text="Data" HorizontalAlignment="Left" VerticalAlignment="Center" />
+                <ComboBox x:Name="comboBox_Data" SelectedValue="{Binding Data}" Grid.Row="1" Grid.Column="1" Margin="10 0" VerticalAlignment="Center">
+                    <ComboBoxItem IsSelected="True">8bits</ComboBoxItem>
+                    <ComboBoxItem>7bits</ComboBoxItem>
+                </ComboBox>
+                <TextBlock Grid.Row="2" Grid.Column="0" Text="Stop bits" HorizontalAlignment="Left" VerticalAlignment="Center" />
+                <ComboBox x:Name="comboBox_StopBits" SelectedValue="{Binding StopBits}" Grid.Row="2" Grid.Column="1" Margin="10 0" VerticalAlignment="Center">
+                    <ComboBoxItem IsSelected="True">1 bit</ComboBoxItem>
+                    <ComboBoxItem>1.5 bit</ComboBoxItem>
+                    <ComboBoxItem>2 bit</ComboBoxItem>
+                </ComboBox>
+            </Grid>
+            <Grid x:Name="grid_Tcp" Grid.Row="2">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="60" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+                <TextBlock Grid.Row="0" Grid.Column="0" Text="Host" HorizontalAlignment="Left" VerticalAlignment="Center" />
+                <TextBox x:Name="textBox_HostAddr" Text="{Binding HostAddr}" Grid.Row="0" Grid.Column="1" Margin="10 0" VerticalAlignment="Center" FontSize="14" />
+                <TextBlock Grid.Row="1" Grid.Column="0" Text="Port" HorizontalAlignment="Left" VerticalAlignment="Center" />
+                <TextBox x:Name="textBox_Port" Text="{Binding Port}" Grid.Row="1" Grid.Column="1" Margin="10 0" VerticalAlignment="Center" FontSize="14" />
+            </Grid>
+            <Grid Grid.Row="3">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="60" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <TextBlock Grid.Column="0" Text="Save to" HorizontalAlignment="Left" VerticalAlignment="Center" />
+                <Grid Grid.Column="1" Margin="10 0" VerticalAlignment="Center">
+                    <TextBox x:Name="textBox_SavePath" Text="{Binding SavePath}" FontSize="14" VerticalContentAlignment="Center" Margin="0,0,20,0" />
+                    <Button x:Name="btn_ChoosePath" Width="20" Content=">" Click="btn_ChoosePath_Click" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" FontSize="14" HorizontalAlignment="Right"/>
+                </Grid>
+            </Grid>
+        </Grid>
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <Button x:Name="btn_OK" Grid.Column="0" Margin="5 0" Content="OK" MaxWidth="60" MaxHeight="20" Click="btn_OK_Click"/>
+            <Button x:Name="btn_Cancel" Grid.Column="1" Margin="5 0" Content="Cancel" MaxWidth="60" MaxHeight="20" Click="btn_Cancel_Click"/>
+        </Grid>
+    </Grid>
+
+</Controls:MetroWindow>

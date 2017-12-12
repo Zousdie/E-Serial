@@ -12,28 +12,17 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using MahApps.Metro.Controls;
-using System.Diagnostics;
 
 namespace E_Serial
 {
     /// <summary>
-    /// MainWindow.xaml 的交互逻辑
+    /// ConnShow.xaml 的交互逻辑
     /// </summary>
-    public partial class MainWindow : MetroWindow
+    public partial class ConnShow : UserControl
     {
-        public MainWindow()
+        public ConnShow()
         {
             InitializeComponent();
-        }
-
-        private void btn_New_Click(object sender, RoutedEventArgs e)
-        {
-            NewConn w = new NewConn();
-            w.Owner = this;
-            w.ShowDialog();
-            if (w.Param != null)
-                Debug.WriteLine(w.Param);
         }
     }
 }
