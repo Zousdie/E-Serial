@@ -1,4 +1,5 @@
-﻿using MahApps.Metro.Controls;
+﻿using E_Serial.Core;
+using MahApps.Metro.Controls;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -16,25 +17,39 @@ using System.Windows.Shapes;
 
 namespace E_Serial
 {
-    /// <summary>
-    /// NewConn.xaml 的交互逻辑
-    /// </summary>
     public partial class NewConn : MetroWindow
     {
-        private NewConnParam ps;
         public NewConnParam Param
         {
-            get { return this.ps; }
+            get;
+            private set;
         }
+
+        public List<string> Ports
+        {
+            get
+            {
+                List<string> ls = System.IO.Ports.SerialPort.GetPortNames().ToList();
+                ls.Add("TCP");
+                return ls;
+            }
+        }
+
         public NewConn()
         {
             InitializeComponent();
-            ps = new NewConnParam();
+            this.Param = new NewConnParam();
+        }
+
+        private void MetroWindow_Loaded(object sender, RoutedEventArgs e)
+        {
+            this.DataContext = this;
+            this.Param.Type = this.Ports[0];
         }
 
         private void btn_Cancel_Click(object sender, RoutedEventArgs e)
         {
-            this.ps = null;
+            this.Param = null;
             this.Close();
         }
 
@@ -49,46 +64,27 @@ namespace E_Serial
             sfd.Filter = "(*.txt)|*.txt|(*.*)|*.*";
             sfd.ShowDialog();
             if (sfd.FileName != string.Empty)
-                this.textBox_SavePath.Text = sfd.FileName;
+                this.Param.SavePath = sfd.FileName;
         }
 
-        private void MetroWindow_Loaded(object sender, RoutedEventArgs e)
+        private void comboBox_Type_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            this.DataContext = this.ps;
-        }
-    }
-
-    public class NewConnParam : INotifyPropertyChanged
-    {
-        private string savePath;
-
-        public string Type { set; get; }
-        public int BaudRate { set; get; }
-        public int Data { set; get; }
-        public string StopBits { set; get; }
-        public string HostAddr { set; get; }
-        public int Port { set; get; }
-        public string SavePath
-        {
-            set
+            if (this.Param.Type == "TCP")
             {
-                this.savePath = value;
-                if (this.PropertyChanged != null)
-                {
-                    this.PropertyChanged.Invoke(this, new PropertyChangedEventArgs("SavePath"));
-                }
+                this.grid_Serial.IsEnabled = false;
+                this.grid_Tcp.IsEnabled = true;
+                this.Param.HostAddr = "10.164.118.99";
+                this.Param.Port = 4001;
+                this.textBox_HostAddr.Focus();
             }
-            get
+            else
             {
-                return this.savePath;
+                this.grid_Serial.IsEnabled = true;
+                this.grid_Tcp.IsEnabled = false;
+                this.Param.HostAddr = string.Empty;
+                this.Param.Port = 0;
+                this.comboBox_BaudRate.Focus();
             }
-        }
-
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        public override string ToString()
-        {
-            return string.Format("Type:{0}-BaudRate:{1}-Data:{2}-StopBits:{3}-HostAddr:{4}-Port:{5}-SavePath:{6}", this.Type, this.BaudRate, this.Data, this.StopBits, this.HostAddr, this.Port, this.SavePath);
         }
     }
 }

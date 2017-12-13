@@ -35,7 +35,7 @@
                     <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
                 <TextBlock Grid.Column="0" Text="Type" HorizontalAlignment="Left" VerticalAlignment="Center" />
-                <ComboBox x:Name="comboBox_Type" SelectedValue="{Binding Type}" Grid.Column="1" Margin="10 0" VerticalAlignment="Center"/>
+                <ComboBox x:Name="comboBox_Type" ItemsSource="{Binding Ports}" SelectedValue="{Binding Param.Type}" SelectedItem="0" Grid.Column="1" Margin="10 0" VerticalAlignment="Center" SelectionChanged="comboBox_Type_SelectionChanged"/>
             </Grid>
             <Grid x:Name="grid_Serial" Grid.Row="1">
                 <Grid.ColumnDefinitions>
@@ -48,26 +48,26 @@
                     <RowDefinition Height="*" />
                 </Grid.RowDefinitions>
                 <TextBlock Grid.Row="0" Grid.Column="0" Text="Baud Rate" HorizontalAlignment="Left" VerticalAlignment="Center" />
-                <ComboBox x:Name="comboBox_BaudRate" SelectedValue="{Binding BaudRate}" Grid.Row="0" Grid.Column="1" Margin="10 0" VerticalAlignment="Center">
-                    <ComboBoxItem IsSelected="True">115200</ComboBoxItem>
-                    <ComboBoxItem>57600</ComboBoxItem>
-                    <ComboBoxItem>38400</ComboBoxItem>
-                    <ComboBoxItem>19200</ComboBoxItem>
-                    <ComboBoxItem>9600</ComboBoxItem>
-                    <ComboBoxItem>4800</ComboBoxItem>
-                    <ComboBoxItem>1200</ComboBoxItem>
-                    <ComboBoxItem>100</ComboBoxItem>
+                <ComboBox x:Name="comboBox_BaudRate" SelectedIndex="0" SelectedValue="{Binding Param.BaudRate}" SelectedValuePath="Content" Grid.Row="0" Grid.Column="1" Margin="10 0" VerticalAlignment="Center">
+                    <ComboBoxItem Content="115200"/>
+                    <ComboBoxItem Content="57600"/>
+                    <ComboBoxItem Content="38400"/>
+                    <ComboBoxItem Content="19200"/>
+                    <ComboBoxItem Content="9600"/>
+                    <ComboBoxItem Content="4800"/>
+                    <ComboBoxItem Content="1200"/>
                 </ComboBox>
                 <TextBlock Grid.Row="1" Grid.Column="0" Text="Data" HorizontalAlignment="Left" VerticalAlignment="Center" />
-                <ComboBox x:Name="comboBox_Data" SelectedValue="{Binding Data}" Grid.Row="1" Grid.Column="1" Margin="10 0" VerticalAlignment="Center">
-                    <ComboBoxItem IsSelected="True">8bits</ComboBoxItem>
-                    <ComboBoxItem>7bits</ComboBoxItem>
+                <ComboBox x:Name="comboBox_Data" SelectedValue="{Binding Param.Data}" SelectedValuePath="Tag" SelectedItem="0" Grid.Row="1" Grid.Column="1" Margin="10 0" VerticalAlignment="Center">
+                    <ComboBoxItem Content="8 bits" Tag="8"/>
+                    <ComboBoxItem Content="7 bits" Tag="7"/>
                 </ComboBox>
                 <TextBlock Grid.Row="2" Grid.Column="0" Text="Stop bits" HorizontalAlignment="Left" VerticalAlignment="Center" />
-                <ComboBox x:Name="comboBox_StopBits" SelectedValue="{Binding StopBits}" Grid.Row="2" Grid.Column="1" Margin="10 0" VerticalAlignment="Center">
-                    <ComboBoxItem IsSelected="True">1 bit</ComboBoxItem>
-                    <ComboBoxItem>1.5 bit</ComboBoxItem>
-                    <ComboBoxItem>2 bit</ComboBoxItem>
+                <ComboBox x:Name="comboBox_StopBits" SelectedValue="{Binding Param.StopBits}" SelectedValuePath="Tag" Grid.Row="2" Grid.Column="1" Margin="10 0" VerticalAlignment="Center">
+                    <ComboBoxItem Tag="1">1 bit</ComboBoxItem>
+                    <ComboBoxItem Tag="3">1.5 bit</ComboBoxItem>
+                    <ComboBoxItem Tag="2">2 bit</ComboBoxItem>
+                    <ComboBoxItem Tag="0">NONE</ComboBoxItem>
                 </ComboBox>
             </Grid>
             <Grid x:Name="grid_Tcp" Grid.Row="2">
@@ -80,9 +80,9 @@
                     <RowDefinition Height="*" />
                 </Grid.RowDefinitions>
                 <TextBlock Grid.Row="0" Grid.Column="0" Text="Host" HorizontalAlignment="Left" VerticalAlignment="Center" />
-                <TextBox x:Name="textBox_HostAddr" Text="{Binding HostAddr}" Grid.Row="0" Grid.Column="1" Margin="10 0" VerticalAlignment="Center" FontSize="14" />
+                <TextBox x:Name="textBox_HostAddr" Text="{Binding Param.HostAddr}" Grid.Row="0" Grid.Column="1" Margin="10 0" VerticalAlignment="Center" FontSize="14" />
                 <TextBlock Grid.Row="1" Grid.Column="0" Text="Port" HorizontalAlignment="Left" VerticalAlignment="Center" />
-                <TextBox x:Name="textBox_Port" Text="{Binding Port}" Grid.Row="1" Grid.Column="1" Margin="10 0" VerticalAlignment="Center" FontSize="14" />
+                <TextBox x:Name="textBox_Port" Text="{Binding Param.Port}" Grid.Row="1" Grid.Column="1" Margin="10 0" VerticalAlignment="Center" FontSize="14" />
             </Grid>
             <Grid Grid.Row="3">
                 <Grid.ColumnDefinitions>
@@ -91,8 +91,8 @@
                 </Grid.ColumnDefinitions>
                 <TextBlock Grid.Column="0" Text="Save to" HorizontalAlignment="Left" VerticalAlignment="Center" />
                 <Grid Grid.Column="1" Margin="10 0" VerticalAlignment="Center">
-                    <TextBox x:Name="textBox_SavePath" Text="{Binding SavePath}" FontSize="14" VerticalContentAlignment="Center" Margin="0,0,20,0" />
-                    <Button x:Name="btn_ChoosePath" Width="20" Content=">" Click="btn_ChoosePath_Click" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" FontSize="14" HorizontalAlignment="Right"/>
+                    <TextBox x:Name="textBox_SavePath" Text="{Binding Param.SavePath}" VerticalContentAlignment="Center" Margin="0,0,14,0" TextOptions.TextFormattingMode="Display" FontSize="14" />
+                    <Button x:Name="btn_ChoosePath" Content=">" Click="btn_ChoosePath_Click" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" HorizontalAlignment="Right" TextOptions.TextFormattingMode="Display" FontSize="14"/>
                 </Grid>
             </Grid>
         </Grid>
@@ -105,5 +105,4 @@
             <Button x:Name="btn_Cancel" Grid.Column="1" Margin="5 0" Content="Cancel" MaxWidth="60" MaxHeight="20" Click="btn_Cancel_Click"/>
         </Grid>
     </Grid>
-
 </Controls:MetroWindow>

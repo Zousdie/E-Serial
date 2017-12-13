@@ -10,38 +10,60 @@ using System.Threading.Tasks;
 
 namespace E_Serial.Core
 {
-    public class SerialPortCore
+    public class SerialPortCore : IConnCore
     {
         private SerialPort port;
         private FileStream fs;
+        private NewConnParam param;
 
-        public SerialPortCore(string portName, int bautRate)
+        public event DataReceivedEventHandler DataReceived;
+
+        FileStream IConnCore.fs
         {
-            this.port = new SerialPort(portName, bautRate, Parity.None, 8, StopBits.One);
-            this.fs = File.Create(string.Format("{0}/{1}/{2}.tmp", AppDomain.CurrentDomain.BaseDirectory, ConfigurationManager.AppSettings["temp"], Guid.NewGuid()), 4096, FileOptions.RandomAccess);
-            if (!port.IsOpen) port.Open();
+            get { return this.fs; }
+        }
+
+        public SerialPortCore(NewConnParam p)
+        {
+            this.param = p;
+            this.port = new SerialPort(p.Type, p.BaudRate, Parity.None, p.Data, (StopBits)p.StopBits);
+            this.port.ReceivedBytesThreshold = 8;
+            this.port.DataReceived += Port_DataReceived;
+            if (!string.IsNullOrWhiteSpace(p.SavePath))
+                this.fs = File.Create(p.SavePath, 4096, FileOptions.None);
+            Debug.WriteLine("new SerialPortCore");
         }
 
         ~SerialPortCore()
         {
             this.Close();
+            Debug.WriteLine("~ SerialPortCore");
         }
 
         private async void Port_DataReceived(object sender, SerialDataReceivedEventArgs e)
         {
-            SerialPort sp = (SerialPort)sender;
-            string indata = sp.ReadExisting();
-            Debug.Write(string.Format("[{0}] {1}", DateTime.Now, indata));
-            byte[] buf = Encoding.ASCII.GetBytes(indata);
+            SerialPort p = (SerialPort)sender;
+            string data = p.ReadExisting();            
+            DataReceived(p, new E_Serial.Core.DataReceivedEventArgs() { Data = data });
+            byte[] buf = Encoding.UTF8.GetBytes(data);
             await fs.WriteAsync(buf, 0, buf.Length);
+        }
+
+        public void Open()
+        {
+            if (this.port != null && !this.port.IsOpen)
+                this.port.Open();
         }
 
         public void Close()
         {
-            if (port.IsOpen)
+            if (port != null && port.IsOpen)
             {
+                this.port.DataReceived -= Port_DataReceived;
+                Debug.WriteLine("SerialPort read stop");
                 port.Close();
                 port.Dispose();
+                port = null;
             }
             if (fs != null)
             {
@@ -49,6 +71,11 @@ namespace E_Serial.Core
                 fs.Dispose();
                 fs = null;
             }
+        }
+
+        public void Write(string data)
+        {
+            this.port.Write(data);
         }
     }
 }

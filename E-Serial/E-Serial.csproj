@@ -80,7 +80,10 @@
     <Compile Include="ConnShow.xaml.cs">
       <DependentUpon>ConnShow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Core\DataReceivedEventHandler.cs" />
+    <Compile Include="Core\IConnCore.cs" />
     <Compile Include="Core\SerialPortCore.cs" />
+    <Compile Include="Core\TcpCore.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -94,6 +97,7 @@
     <Compile Include="NewConn.xaml.cs">
       <DependentUpon>NewConn.xaml</DependentUpon>
     </Compile>
+    <Compile Include="NewConnParam.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
