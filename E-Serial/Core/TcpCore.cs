@@ -23,12 +23,20 @@ namespace E_Serial.Core
             get { return this.fs; }
         }
 
+        public bool Status
+        {
+            get
+            {
+                return this.tcp != null && this.tcp.Connected;
+            }
+        }
+
         public TcpCore(NewConnParam p)
         {
             this.param = p;
             this.tcp = new TcpClient();
             if (!string.IsNullOrWhiteSpace(p.SavePath))
-                this.fs = File.Create(p.SavePath, 4096, FileOptions.None);
+                this.fs = File.Create(p.SavePath);
             Debug.WriteLine("new TcpCore");
         }
 
@@ -53,11 +61,21 @@ namespace E_Serial.Core
             }
         }
 
-        public void Open()
+        public async void Open()
         {
-            if (!this.tcp.Connected)
+            if (this.tcp != null && !this.tcp.Connected)
             {
-                this.tcp.Connect(param.HostAddr, param.Port);
+                DataReceived(this.tcp, new DataReceivedEventArgs() { Data = string.Format("Connect to {0}:{1}{2}", this.param.HostAddr, this.param.Port, Environment.NewLine) });
+                try
+                {
+                    await this.tcp.ConnectAsync(param.HostAddr, param.Port);
+                    DataReceived(this.tcp, new DataReceivedEventArgs() { Data = string.Format("Connect to {0}:{1} successful!{2}", this.param.HostAddr, this.param.Port, Environment.NewLine) });
+                }
+                catch (System.Net.Sockets.SocketException)
+                {
+                    DataReceived(this.tcp, new DataReceivedEventArgs() { Data = string.Format("Connect to {0}:{1} failed!{2}", this.param.HostAddr, this.param.Port, Environment.NewLine) });
+                    return;
+                }
             }
             NetworkStream ns = this.tcp.GetStream();
             byte[] buf = new byte[8];
@@ -73,9 +91,10 @@ namespace E_Serial.Core
                             if (n > 0)
                             {
                                 DataReceived(this.tcp, new DataReceivedEventArgs() { Data = Encoding.ASCII.GetString(buf) });
-                                await fs.WriteAsync(buf, 0, buf.Length);
+                                if (this.fs != null)
+                                    await fs.WriteAsync(buf, 0, buf.Length);
                             }
-                            Thread.Sleep(5);
+                            Thread.Sleep(10);
                         }
                         else
                         {
@@ -95,9 +114,12 @@ namespace E_Serial.Core
 
         public void Write(string data)
         {
-            NetworkStream ns = this.tcp.GetStream();
-            byte[] buf = Encoding.ASCII.GetBytes(data);
-            ns.Write(buf, 0, buf.Length);
+            if (this.tcp.Connected)
+            {
+                NetworkStream ns = this.tcp.GetStream();
+                byte[] buf = Encoding.ASCII.GetBytes(data);
+                ns.Write(buf, 0, buf.Length);
+            }
         }
     }
 }

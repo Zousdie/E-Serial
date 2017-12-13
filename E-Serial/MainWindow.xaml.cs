@@ -24,6 +24,7 @@ namespace E_Serial
     public partial class MainWindow : MetroWindow
     {
         private Dictionary<string, TabItem> tabMap;
+
         public MainWindow()
         {
             InitializeComponent();
@@ -37,32 +38,27 @@ namespace E_Serial
             w.ShowDialog();
             if (w.Param != null)
             {
-                Debug.WriteLine(w.Param);
-                string endPort = w.Param.Type == "TCP" ? ":" + w.Param.HostAddr + ":" + w.Param.Port : w.Param.Type;
+                string endPort = w.Param.Type == "TCP" ? w.Param.HostAddr + ":" + w.Param.Port : w.Param.Type;
                 if (!this.tabMap.ContainsKey(endPort))
                 {
                     TabItem t = new TabItem();
-                    t.Header = w.Param.Type;
+                    t.Header = endPort;
                     if (w.Param.Type != "TCP")
                     {
                         t.Content = new ConnShow(new SerialPortCore(w.Param));
-                        t.Unloaded += Tab_Unloaded;
-                        this.tabMap.Add(endPort, t);
-                        this.tab_Main.Items.Add(t);
-                        this.tab_Main.SelectedItem = t;
                     }
                     else
                     {
                         t.Content = new ConnShow(new TcpCore(w.Param));
-                        t.Unloaded += Tab_Unloaded;
-                        this.tabMap.Add(endPort, t);
-                        this.tab_Main.Items.Add(t);
-                        this.tab_Main.SelectedItem = t;
                     }
+                    t.Unloaded += Tab_Unloaded;
+                    this.tabMap.Add(endPort, t);
+                    this.tab_Main.Items.Add(t);
+                    this.tab_Main.SelectedItem = t;
                 }
                 else
                 {
-
+                    Debug.WriteLine("{0} start", endPort);
                 }
             }
         }
@@ -73,6 +69,19 @@ namespace E_Serial
             ConnShow tc = (ConnShow)t.Content;
             tc.Icc.Close();
             this.tabMap.Remove(t.Header.ToString());
+        }
+
+        private void btn_Clear_Click(object sender, RoutedEventArgs e)
+        {
+            ConnShow o = this.tab_Main.SelectedItem as ConnShow;
+            if (o != null)
+                o.txt_Data.Clear();
+        }
+
+        private void btn_CloseAll_Click(object sender, RoutedEventArgs e)
+        {
+            this.tab_Main.Items.Clear();
+            tabMap.Clear();
         }
     }
 }

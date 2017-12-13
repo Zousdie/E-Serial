@@ -31,13 +31,13 @@
             <Button Content="New"
                     ToolTip="Create new connection" Click="btn_New_Click"/>
             <Button Content="Clear"
-                    ToolTip="Clear current window"/>
+                    ToolTip="Clear current window" Click="btn_Clear_Click"/>
             <Button Content="Record Start"
                     ToolTip="Start record" />
             <Button Content="Record Stop"
                     ToolTip="Stop record" />
             <Button Content="Close all"
-                    ToolTip="Close all connection"/>
+                    ToolTip="Close all connection" Click="btn_CloseAll_Click"/>
         </Controls:WindowCommands>
         <TabControl x:Name="tab_Main" Grid.Row="1" Margin="5,0,5,5" />
     </Grid>

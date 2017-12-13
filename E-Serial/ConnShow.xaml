@@ -6,7 +6,7 @@
              xmlns:local="clr-namespace:E_Serial"
              mc:Ignorable="d" 
              Width="auto"
-             Height="auto" Loaded="UserControl_Loaded" Unloaded="UserControl_Unloaded">
+             Height="auto" Loaded="UserControl_Loaded">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="*" />
@@ -19,7 +19,7 @@
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
             <TextBox Grid.Column="0" Background="#FF747474" IsReadOnly="True" Text=">" MaxLines="1" TextOptions.TextFormattingMode="Display" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
-            <TextBox x:Name="txt_Write" Grid.Column="1" Background="#FF747474" TextOptions.TextFormattingMode="Display" VerticalContentAlignment="Center" KeyDown="txt_Write_KeyDown" />
+            <TextBox x:Name="txt_Write" IsEnabled="{Binding Status}" Grid.Column="1" Background="#FF747474" TextOptions.TextFormattingMode="Display" VerticalContentAlignment="Center" KeyDown="txt_Write_KeyDown" />
         </Grid>
     </Grid>
 </UserControl>

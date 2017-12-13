@@ -59,11 +59,14 @@ namespace E_Serial
                             this.txt_Data.ScrollToEnd();
                         });
                     }
-                    catch (Exception ex) { Debug.WriteLine(ex.Message); }
+                    catch (Exception ex)
+                    {
+                        Debug.WriteLine(ex.Message);
+                    }
                 };
                 icc.Open();
                 isRun = true;
-                Debug.WriteLine("start Run");
+                this.txt_Write.DataContext = this.Icc;
             }
         }
 
@@ -80,12 +83,7 @@ namespace E_Serial
         private void UserControl_Loaded(object sender, RoutedEventArgs e)
         {
             this.StartLoad();
-            Debug.WriteLine("load ConnShow");
-        }
-
-        private void UserControl_Unloaded(object sender, RoutedEventArgs e)
-        {
-            Debug.WriteLine("unload ConnShow");
+            this.txt_Write.Focus();
         }
     }
 }
