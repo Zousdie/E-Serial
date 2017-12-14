@@ -49,14 +49,23 @@ namespace E_Serial
         {
             if (!isRun)
             {
-                icc.DataReceived += (object s, Core.DataReceivedEventArgs ea) =>
+                icc.DataReceived += (object sendor, Core.DataReceivedEventArgs ea) =>
                 {
                     try
                     {
                         this.txt_Data.Dispatcher.Invoke(() =>
                         {
+                            if ((bool)Application.Current.Properties["AutoClear"])
+                                if (this.txt_Data.GetLastVisibleLineIndex() >= (int)Application.Current.Properties["AutoClearLines"])
+                                {
+                                    int l = this.txt_Data.Text.Length;
+                                    string s = this.txt_Data.Text.Substring(l / 2);
+                                    txt_Data.Clear();
+                                    txt_Data.Text = s;
+                                }
                             this.txt_Data.AppendText(ea.Data);
-                            this.txt_Data.ScrollToEnd();
+                            if ((bool)Application.Current.Properties["AutoScroll"])
+                                this.txt_Data.ScrollToEnd();
                         });
                     }
                     catch (Exception ex)

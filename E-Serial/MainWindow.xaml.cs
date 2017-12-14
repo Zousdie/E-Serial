@@ -73,15 +73,29 @@ namespace E_Serial
 
         private void btn_Clear_Click(object sender, RoutedEventArgs e)
         {
-            ConnShow o = this.tab_Main.SelectedItem as ConnShow;
+            TabItem o = (this.tab_Main.SelectedItem as TabItem);
             if (o != null)
-                o.txt_Data.Clear();
+            {
+                ConnShow c = o.Content as ConnShow;
+                if (c != null)
+                    c.txt_Data.Clear();
+            }
         }
 
         private void btn_CloseAll_Click(object sender, RoutedEventArgs e)
         {
             this.tab_Main.Items.Clear();
             tabMap.Clear();
+        }
+
+        private void btn_Setting_Click(object sender, RoutedEventArgs e)
+        {
+            
+        }
+
+        private void btn_About_Click(object sender, RoutedEventArgs e)
+        {
+
         }
     }
 }

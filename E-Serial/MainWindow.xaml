@@ -17,8 +17,8 @@
 
     <Controls:MetroWindow.RightWindowCommands>
         <Controls:WindowCommands ShowLastSeparator="False">
-            <Button Content="Setting" />
-            <Button Content="About" />
+            <Button Content="Setting" Click="btn_Setting_Click" />
+            <Button Content="About" Click="btn_About_Click" />
         </Controls:WindowCommands>
     </Controls:MetroWindow.RightWindowCommands>
 
@@ -32,9 +32,9 @@
                     ToolTip="Create new connection" Click="btn_New_Click"/>
             <Button Content="Clear"
                     ToolTip="Clear current window" Click="btn_Clear_Click"/>
-            <Button Content="Record Start"
+            <Button Content="Start Record"
                     ToolTip="Start record" />
-            <Button Content="Record Stop"
+            <Button Content="Stop Record"
                     ToolTip="Stop record" />
             <Button Content="Close all"
                     ToolTip="Close all connection" Click="btn_CloseAll_Click"/>

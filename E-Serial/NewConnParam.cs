@@ -17,15 +17,14 @@ namespace E_Serial
         private int port = 4001;
         private string savePath;
 
+        public event PropertyChangedEventHandler PropertyChanged;
+
         public string Type
         {
             set
             {
                 this.type = value;
-                if (this.PropertyChanged != null)
-                {
-                    this.PropertyChanged.Invoke(this, new PropertyChangedEventArgs("Type"));
-                }
+                this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Type"));
             }
             get { return this.type; }
         }
@@ -35,10 +34,7 @@ namespace E_Serial
             set
             {
                 this.baudRate = value;
-                if (this.PropertyChanged != null)
-                {
-                    this.PropertyChanged.Invoke(this, new PropertyChangedEventArgs("BaudRate"));
-                }
+                this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("BaudRate"));
             }
             get { return this.baudRate; }
         }
@@ -48,10 +44,7 @@ namespace E_Serial
             set
             {
                 this.data = value;
-                if (this.PropertyChanged != null)
-                {
-                    this.PropertyChanged.Invoke(this, new PropertyChangedEventArgs("Data"));
-                }
+                this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Data"));
             }
             get { return this.data; }
         }
@@ -61,10 +54,7 @@ namespace E_Serial
             set
             {
                 this.stopBits = value;
-                if (this.PropertyChanged != null)
-                {
-                    this.PropertyChanged.Invoke(this, new PropertyChangedEventArgs("StopBits"));
-                }
+                this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("StopBits"));
             }
             get { return this.stopBits; }
         }
@@ -74,10 +64,7 @@ namespace E_Serial
             set
             {
                 this.hostAddr = value;
-                if (this.PropertyChanged != null)
-                {
-                    this.PropertyChanged.Invoke(this, new PropertyChangedEventArgs("HostAddr"));
-                }
+                this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("HostAddr"));
             }
             get { return this.hostAddr; }
         }
@@ -87,10 +74,7 @@ namespace E_Serial
             set
             {
                 this.port = value;
-                if (this.PropertyChanged != null)
-                {
-                    this.PropertyChanged.Invoke(this, new PropertyChangedEventArgs("Port"));
-                }
+                this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Port"));
             }
             get { return this.port; }
         }
@@ -100,18 +84,13 @@ namespace E_Serial
             set
             {
                 this.savePath = value;
-                if (this.PropertyChanged != null)
-                {
-                    this.PropertyChanged.Invoke(this, new PropertyChangedEventArgs("SavePath"));
-                }
+                this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("SavePath"));
             }
             get
             {
                 return this.savePath;
             }
         }
-
-        public event PropertyChangedEventHandler PropertyChanged;
 
         public override string ToString()
         {

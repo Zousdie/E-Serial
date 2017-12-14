@@ -11,7 +11,7 @@ namespace E_Serial.Core
     {
         FileStream fs { get; }
 
-        bool Status { get; }
+        bool Status { get; set; }
 
         void Open();
 

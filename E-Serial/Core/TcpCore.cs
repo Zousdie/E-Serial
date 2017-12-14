@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -10,13 +11,14 @@ using System.Threading.Tasks;
 
 namespace E_Serial.Core
 {
-    class TcpCore : IConnCore
+    class TcpCore : IConnCore, INotifyPropertyChanged
     {
         private FileStream fs;
         private NewConnParam param;
         private TcpClient tcp;
 
         public event DataReceivedEventHandler DataReceived;
+        public event PropertyChangedEventHandler PropertyChanged;
 
         FileStream IConnCore.fs
         {
@@ -28,6 +30,10 @@ namespace E_Serial.Core
             get
             {
                 return this.tcp != null && this.tcp.Connected;
+            }
+            set
+            {
+                this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Status"));
             }
         }
 
@@ -61,53 +67,65 @@ namespace E_Serial.Core
             }
         }
 
-        public async void Open()
+        public void Open()
         {
-            if (this.tcp != null && !this.tcp.Connected)
+            Task t = new Task(() =>
             {
-                DataReceived(this.tcp, new DataReceivedEventArgs() { Data = string.Format("Connect to {0}:{1}{2}", this.param.HostAddr, this.param.Port, Environment.NewLine) });
-                try
+                if (this.tcp != null && !this.tcp.Connected)
                 {
-                    await this.tcp.ConnectAsync(param.HostAddr, param.Port);
-                    DataReceived(this.tcp, new DataReceivedEventArgs() { Data = string.Format("Connect to {0}:{1} successful!{2}", this.param.HostAddr, this.param.Port, Environment.NewLine) });
-                }
-                catch (System.Net.Sockets.SocketException)
-                {
-                    DataReceived(this.tcp, new DataReceivedEventArgs() { Data = string.Format("Connect to {0}:{1} failed!{2}", this.param.HostAddr, this.param.Port, Environment.NewLine) });
-                    return;
-                }
-            }
-            NetworkStream ns = this.tcp.GetStream();
-            byte[] buf = new byte[8];
-            Task t = new Task(async () =>
-            {
-                while (true)
-                {
-                    try
+                    Task t1 = new Task(() =>
                     {
-                        if (this.tcp != null && this.tcp.Connected)
+                        try
                         {
-                            int n = ns.Read(buf, 0, buf.Length);
-                            if (n > 0)
+                            DataReceived(this.tcp, new DataReceivedEventArgs() { Data = string.Format("Connect to {0}:{1}{2}", this.param.HostAddr, this.param.Port, Environment.NewLine) });
+                            this.tcp.Connect(param.HostAddr, param.Port);
+                            this.Status = true;
+                            DataReceived(this.tcp, new DataReceivedEventArgs() { Data = string.Format("Connect to {0}:{1} successful!{2}", this.param.HostAddr, this.param.Port, Environment.NewLine) });
+                        }
+                        catch
+                        {
+                            DataReceived(this.tcp, new DataReceivedEventArgs() { Data = string.Format("Connect to {0}:{1} failed: access denied{2}", this.param.HostAddr, this.param.Port, Environment.NewLine) });
+                        }
+                    });
+                    t1.Start();
+                    t1.Wait(6000);
+                }
+                if (this.Status)
+                {
+                    Task t2 = new Task(async () =>
+                    {
+                        byte[] buf = new byte[8];
+                        while (true)
+                        {
+                            try
                             {
-                                DataReceived(this.tcp, new DataReceivedEventArgs() { Data = Encoding.ASCII.GetString(buf) });
-                                if (this.fs != null)
-                                    await fs.WriteAsync(buf, 0, buf.Length);
+                                if (this.tcp != null && this.tcp.Connected)
+                                {
+                                    int n = this.tcp.GetStream().Read(buf, 0, buf.Length);
+                                    if (n > 0)
+                                    {
+                                        DataReceived(this.tcp, new DataReceivedEventArgs() { Data = Encoding.ASCII.GetString(buf) });
+                                        if (this.fs != null)
+                                            await fs.WriteAsync(buf, 0, buf.Length);
+                                    }
+                                    Thread.Sleep(10);
+                                }
+                                else
+                                {
+                                    break;
+                                }
                             }
-                            Thread.Sleep(10);
+                            catch (Exception ex)
+                            {
+                                Debug.WriteLine(ex.Message);
+                                DataReceived(this.tcp, new DataReceivedEventArgs() { Data = string.Format("Disconnect with {0}:{1}{2}", this.param.HostAddr, this.param.Port, Environment.NewLine) });
+                                break;
+                            }
                         }
-                        else
-                        {
-                            break;
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        Debug.WriteLine(ex.Message);
-                        break;
-                    }
+                        Debug.WriteLine("TCP read stop");
+                    });
+                    t2.Start();
                 }
-                Debug.WriteLine("TCP read stop");
             });
             t.Start();
         }

@@ -12,7 +12,7 @@
             <RowDefinition Height="*" />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
-        <TextBox x:Name="txt_Data" Grid.Row="0" IsReadOnly="True" MaxLines="8000" ScrollViewer.VerticalScrollBarVisibility="Auto" />
+        <TextBox x:Name="txt_Data" Grid.Row="0" IsReadOnly="True" ScrollViewer.VerticalScrollBarVisibility="Auto" IsUndoEnabled="False" AcceptsReturn="False" TextOptions.TextFormattingMode="Display" />
         <Grid Grid.Row="1">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="19" />

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Configuration;
 using System.Diagnostics;
 using System.IO;
@@ -10,13 +11,14 @@ using System.Threading.Tasks;
 
 namespace E_Serial.Core
 {
-    public class SerialPortCore : IConnCore
+    public class SerialPortCore : IConnCore, INotifyPropertyChanged
     {
         private SerialPort port;
         private FileStream fs;
         private NewConnParam param;
 
         public event DataReceivedEventHandler DataReceived;
+        public event PropertyChangedEventHandler PropertyChanged;
 
         FileStream IConnCore.fs
         {
@@ -28,6 +30,10 @@ namespace E_Serial.Core
             get
             {
                 return this.port != null && this.port.IsOpen;
+            }
+            set
+            {
+                this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Status"));
             }
         }
 
@@ -49,7 +55,18 @@ namespace E_Serial.Core
         public void Open()
         {
             if (this.port != null && !this.port.IsOpen)
-                this.port.Open();
+            {
+                try
+                {
+                    this.port.Open();
+                    this.Status = true;
+                }
+                catch
+                {
+                    DataReceived(this.port, new E_Serial.Core.DataReceivedEventArgs() { Data = string.Format("Open {0} failed: access denied{1}", this.param.Type, Environment.NewLine) });
+                    return;
+                }
+            }
             Task t = new Task(async () =>
             {
                 while (true)
@@ -74,6 +91,7 @@ namespace E_Serial.Core
                     catch (Exception ex)
                     {
                         Debug.WriteLine(ex.Message);
+                        DataReceived(this.port, new E_Serial.Core.DataReceivedEventArgs() { Data = string.Format("Disconnect with {0}{1}", this.param.Type, Environment.NewLine) });
                         break;
                     }
                 }
