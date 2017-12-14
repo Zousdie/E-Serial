@@ -56,10 +56,9 @@ namespace E_Serial
                         this.txt_Data.Dispatcher.Invoke(() =>
                         {
                             if ((bool)Application.Current.Properties["AutoClear"])
-                                if (this.txt_Data.GetLastVisibleLineIndex() >= (int)Application.Current.Properties["AutoClearLines"])
+                                if (this.txt_Data.LineCount >= (int)Application.Current.Properties["AutoClearLines"])
                                 {
-                                    int l = this.txt_Data.Text.Length;
-                                    string s = this.txt_Data.Text.Substring(l / 2);
+                                    string s = this.txt_Data.Text.Substring(this.txt_Data.Text.Length / 2);
                                     txt_Data.Clear();
                                     txt_Data.Text = s;
                                 }

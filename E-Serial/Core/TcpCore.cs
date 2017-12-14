@@ -112,12 +112,14 @@ namespace E_Serial.Core
                                 }
                                 else
                                 {
+                                    this.Status = false;
                                     break;
                                 }
                             }
                             catch (Exception ex)
                             {
                                 Debug.WriteLine(ex.Message);
+                                this.Status = false;
                                 DataReceived(this.tcp, new DataReceivedEventArgs() { Data = string.Format("Disconnect with {0}:{1}{2}", this.param.HostAddr, this.param.Port, Environment.NewLine) });
                                 break;
                             }
