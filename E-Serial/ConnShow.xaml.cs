@@ -24,12 +24,14 @@ namespace E_Serial
     {
         private bool isRun;
         private IConnCore icc;
+        private App app;
 
         public ConnShow(IConnCore icc)
         {
+            InitializeComponent();
             this.icc = icc;
             this.isRun = false;
-            InitializeComponent();
+            this.app = (App)Application.Current;
         }
 
         public IConnCore Icc
@@ -55,15 +57,15 @@ namespace E_Serial
                     {
                         this.txt_Data.Dispatcher.Invoke(() =>
                         {
-                            if ((bool)Application.Current.Properties["AutoClear"])
-                                if (this.txt_Data.LineCount >= (int)Application.Current.Properties["AutoClearLines"])
+                            if (app.AutoClear)
+                                if (this.txt_Data.LineCount >= app.AutoClearLines)
                                 {
                                     string s = this.txt_Data.Text.Substring(this.txt_Data.Text.Length / 2);
                                     txt_Data.Clear();
                                     txt_Data.Text = s;
                                 }
                             this.txt_Data.AppendText(ea.Data);
-                            if ((bool)Application.Current.Properties["AutoScroll"])
+                            if (app.AutoScroll)
                                 this.txt_Data.ScrollToEnd();
                         });
                     }

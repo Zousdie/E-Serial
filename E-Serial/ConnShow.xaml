@@ -6,20 +6,45 @@
              xmlns:local="clr-namespace:E_Serial"
              mc:Ignorable="d" 
              Width="auto"
-             Height="auto" Loaded="UserControl_Loaded">
+             Height="auto"
+             Loaded="UserControl_Loaded">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="*" />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
-        <TextBox x:Name="txt_Data" Grid.Row="0" IsReadOnly="True" ScrollViewer.VerticalScrollBarVisibility="Auto" IsUndoEnabled="False" AcceptsReturn="False" TextOptions.TextFormattingMode="Display" />
+        <TextBox x:Name="txt_Data" 
+                 Grid.Row="0"
+                 IsReadOnly="True"
+                 ScrollViewer.VerticalScrollBarVisibility="Auto"
+                 IsUndoEnabled="False"
+                 AcceptsReturn="False"
+                 TextOptions.TextFormattingMode="Display"
+                 FontFamily="Consolas"/>
         <Grid Grid.Row="1">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="19" />
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
-            <TextBox Grid.Column="0" Background="#FF747474" IsReadOnly="True" Text=">" MaxLines="1" TextOptions.TextFormattingMode="Display" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
-            <TextBox x:Name="txt_Write" IsEnabled="{Binding Status}" Grid.Column="1" Background="#FF747474" TextOptions.TextFormattingMode="Display" VerticalContentAlignment="Center" KeyDown="txt_Write_KeyDown" />
+            <TextBox Grid.Column="0"
+                     Background="#FF666666"
+                     Foreground="White"
+                     IsReadOnly="True"
+                     Text=">"
+                     MaxLines="1"
+                     TextOptions.TextFormattingMode="Display"
+                     HorizontalContentAlignment="Center"
+                     VerticalContentAlignment="Center"
+                     FontFamily="Consolas"/>
+            <TextBox x:Name="txt_Write"
+                     IsEnabled="{Binding Status}"
+                     Grid.Column="1"
+                     Background="#FF666666"
+                     Foreground="White"
+                     TextOptions.TextFormattingMode="Display"
+                     VerticalContentAlignment="Center"
+                     KeyDown="txt_Write_KeyDown"
+                     FontFamily="Consolas"/>
         </Grid>
     </Grid>
 </UserControl>

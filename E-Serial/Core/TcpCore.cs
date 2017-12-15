@@ -13,9 +13,9 @@ namespace E_Serial.Core
 {
     class TcpCore : IConnCore, INotifyPropertyChanged
     {
-        private FileStream fs;
         private NewConnParam param;
         private TcpClient tcp;
+        private FileStream fs;
 
         public event DataReceivedEventHandler DataReceived;
         public event PropertyChangedEventHandler PropertyChanged;

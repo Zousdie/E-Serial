@@ -8,14 +8,21 @@
     xmlns:local="clr-namespace:E_Serial"
     mc:Ignorable="d"
     Title="New Connection"
-    TitleAlignment="Center"
+    TitleAlignment="Left"
     ShowCloseButton="False"
     ShowMinButton="False"
     ShowMaxRestoreButton="False"
     WindowStartupLocation="CenterScreen"
     Width="260"
     Height="400"
-    HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" ScrollViewer.VerticalScrollBarVisibility="Auto" MaxWidth="260" MaxHeight="400" MinHeight="400" MinWidth="260" Loaded="MetroWindow_Loaded">
+    MaxWidth="260"
+    MaxHeight="400"
+    MinHeight="400"
+    MinWidth="260"
+    HorizontalContentAlignment="Stretch"
+    VerticalContentAlignment="Stretch"
+    ScrollViewer.VerticalScrollBarVisibility="Auto"
+    Loaded="MetroWindow_Loaded">
 
     <Grid Margin="15 10 15 10">
         <Grid.RowDefinitions>

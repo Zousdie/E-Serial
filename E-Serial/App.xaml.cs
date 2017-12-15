@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MahApps.Metro;
+using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
@@ -16,13 +17,15 @@ namespace E_Serial
         private bool autoScroll;
         private bool autoClear;
         private int autoClearLines;
+        private string accent;
+        private Configuration config;
 
         public bool AutoScroll
         {
             set
             {
                 this.autoScroll = value;
-                ConfigurationManager.AppSettings["AutoScroll"] = value.ToString();
+                config.AppSettings.Settings["AutoScroll"].Value = value.ToString();
             }
             get
             {
@@ -35,7 +38,7 @@ namespace E_Serial
             set
             {
                 this.autoClear = value;
-                ConfigurationManager.AppSettings["AutoClear"] = value.ToString();
+                config.AppSettings.Settings["AutoClear"].Value = value.ToString();
             }
             get
             {
@@ -48,11 +51,26 @@ namespace E_Serial
             set
             {
                 this.autoClearLines = value;
-                ConfigurationManager.AppSettings["AutoClearLines"] = value.ToString();
+                config.AppSettings.Settings["AutoClearLines"].Value = value.ToString();
             }
             get
             {
                 return this.autoClearLines;
+            }
+        }
+
+        public string Accent
+        {
+            get
+            {
+                return accent;
+            }
+
+            set
+            {
+                accent = value;
+                ThemeManager.ChangeAppStyle(Application.Current, ThemeManager.GetAccent(value), ThemeManager.GetAppTheme("BaseDark"));
+                config.AppSettings.Settings["Accent"].Value = value;
             }
         }
 
@@ -61,9 +79,12 @@ namespace E_Serial
             this.autoScroll = Convert.ToBoolean(ConfigurationManager.AppSettings["AutoScroll"]);
             this.autoClear = Convert.ToBoolean(ConfigurationManager.AppSettings["AutoClear"]);
             this.autoClearLines = Convert.ToInt32(ConfigurationManager.AppSettings["AutoClearLines"]);
-            Application.Current.Properties["AutoScroll"] = this.AutoScroll;
-            Application.Current.Properties["AutoClear"] = this.AutoClear;
-            Application.Current.Properties["AutoClearLines"] = this.AutoClearLines;
+            this.accent = ConfigurationManager.AppSettings["Accent"];
+            this.config = System.Configuration.ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
+            this.Exit += (object sender, ExitEventArgs e) =>
+            {
+                config.Save(ConfigurationSaveMode.Modified);
+            };
         }
     }
 }

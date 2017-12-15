@@ -15,6 +15,7 @@ using System.Windows.Shapes;
 using MahApps.Metro.Controls;
 using System.Diagnostics;
 using E_Serial.Core;
+using MahApps.Metro;
 
 namespace E_Serial
 {
@@ -23,12 +24,19 @@ namespace E_Serial
     /// </summary>
     public partial class MainWindow : MetroWindow
     {
+        private App app;
         private Dictionary<string, TabItem> tabMap;
+
+        public App CurrentApp
+        {
+            get { return app; }
+        }
 
         public MainWindow()
         {
             InitializeComponent();
             tabMap = new Dictionary<string, TabItem>();
+            app = (App)App.Current;
         }
 
         private void btn_New_Click(object sender, RoutedEventArgs e)
@@ -90,12 +98,16 @@ namespace E_Serial
 
         private void btn_Setting_Click(object sender, RoutedEventArgs e)
         {
-            
+            Setting sw = new Setting();
+            sw.Owner = this;
+            sw.ShowDialog();
         }
 
         private void btn_About_Click(object sender, RoutedEventArgs e)
         {
-
+            About aw = new About();
+            aw.Owner = this;
+            aw.ShowDialog();
         }
     }
 }
