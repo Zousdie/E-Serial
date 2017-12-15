@@ -32,10 +32,12 @@
                     ToolTip="Create new connection" Click="btn_New_Click"/>
             <Button Content="Clear"
                     ToolTip="Clear current window" Click="btn_Clear_Click"/>
+            <Button Content="Copy"
+                    ToolTip="Copy current content to clipboard" Click="btn_Copy_Click"/>
             <Button Content="Start Record"
-                    ToolTip="Start record" />
+                    ToolTip="Start record" Click="btn_RStart_Click" />
             <Button Content="Stop Record"
-                    ToolTip="Stop record" />
+                    ToolTip="Stop record" Click="btn_RStop_Click" />
             <Button Content="Close all"
                     ToolTip="Close all connection" Click="btn_CloseAll_Click"/>
         </Controls:WindowCommands>

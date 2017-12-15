@@ -81,7 +81,7 @@ namespace E_Serial
 
         private void btn_Clear_Click(object sender, RoutedEventArgs e)
         {
-            TabItem o = (this.tab_Main.SelectedItem as TabItem);
+            TabItem o = this.tab_Main.SelectedItem as TabItem;
             if (o != null)
             {
                 ConnShow c = o.Content as ConnShow;
@@ -108,6 +108,38 @@ namespace E_Serial
             About aw = new About();
             aw.Owner = this;
             aw.ShowDialog();
+        }
+
+        private void btn_RStart_Click(object sender, RoutedEventArgs e)
+        {
+            TabItem o = this.tab_Main.SelectedItem as TabItem;
+            if (o != null)
+            {
+                ConnShow c = o.Content as ConnShow;
+                if (c != null)
+                {
+                    
+                }
+            }
+        }
+
+        private void btn_RStop_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void btn_Copy_Click(object sender, RoutedEventArgs e)
+        {
+            TabItem o = this.tab_Main.SelectedItem as TabItem;
+            if (o != null)
+            {
+                ConnShow c = o.Content as ConnShow;
+                if (c != null)
+                {
+                    c.txt_Data.SelectAll();
+                    c.txt_Data.Copy();
+                }
+            }
         }
     }
 }
