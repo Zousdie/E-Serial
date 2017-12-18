@@ -88,7 +88,10 @@ namespace E_Serial.Core
                         }
                     });
                     t1.Start();
-                    t1.Wait(6000);
+                    if (!t1.Wait(10000))
+                    {
+                        DataReceived(this.tcp, new DataReceivedEventArgs() { Data = string.Format("Connect to {0}:{1} failed: timeout{2}", this.param.HostAddr, this.param.Port, Environment.NewLine) });
+                    }
                 }
                 if (this.Status)
                 {

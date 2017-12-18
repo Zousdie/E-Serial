@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -25,6 +26,8 @@ namespace E_Serial
         private bool isRun;
         private IConnCore icc;
         private App app;
+        private FileStream rFS;
+        private string rFPath;
 
         public ConnShow(IConnCore icc)
         {
@@ -32,6 +35,8 @@ namespace E_Serial
             this.icc = icc;
             this.isRun = false;
             this.app = (App)Application.Current;
+            this.rFS = null;
+            this.rFPath = string.Empty;
         }
 
         public IConnCore Icc
@@ -45,6 +50,17 @@ namespace E_Serial
             {
                 icc = value;
             }
+        }
+
+        public string RFPath
+        {
+            get { return this.rFPath; }
+        }
+
+        public void ClearRFPath()
+        {
+            File.Delete(this.rFPath);
+            this.rFPath = string.Empty;
         }
 
         public void StartLoad()
@@ -78,6 +94,39 @@ namespace E_Serial
                 isRun = true;
                 this.txt_Write.DataContext = this.Icc;
             }
+        }
+
+        public bool RStart()
+        {
+            if (this.rFS == null && this.rFPath == string.Empty && isRun)
+            {
+                rFPath = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "../../tmp", Guid.NewGuid().ToString() + ".tmp");
+                rFS = File.Create(rFPath);
+                icc.DataReceived += rDataReceived;
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        public async void RStop()
+        {
+            if (this.rFS != null && this.rFPath != string.Empty && isRun)
+            {
+                icc.DataReceived -= rDataReceived;
+                await rFS.FlushAsync();
+                rFS.Close();
+                rFS.Dispose();
+                rFS = null;
+            }
+        }
+
+        private async void rDataReceived(object sendor, Core.DataReceivedEventArgs ea)
+        {
+            byte[] buf = Encoding.UTF8.GetBytes(ea.Data);
+            await rFS.WriteAsync(buf, 0, buf.Length);
         }
 
         private void txt_Write_KeyDown(object sender, KeyEventArgs e)

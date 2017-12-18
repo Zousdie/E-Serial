@@ -16,6 +16,7 @@ using MahApps.Metro.Controls;
 using System.Diagnostics;
 using E_Serial.Core;
 using MahApps.Metro;
+using System.IO;
 
 namespace E_Serial
 {
@@ -118,14 +119,53 @@ namespace E_Serial
                 ConnShow c = o.Content as ConnShow;
                 if (c != null)
                 {
-                    
+                    if (!c.RStart())
+                    {
+                        Debug.WriteLine("Record error");
+                        if (c.RFPath != string.Empty)
+                        {
+                            MessageBoxResult dr = MessageBox.Show("Save last result?", "Tooltip", MessageBoxButton.OKCancel, MessageBoxImage.Question);
+                            if (dr == MessageBoxResult.OK)
+                            {
+                                System.Windows.Forms.SaveFileDialog sfd = new System.Windows.Forms.SaveFileDialog();
+                                sfd.Title = "Please save last result";
+                                sfd.Filter = "(*.txt)|*.txt|(*.*)|*.*";
+                                sfd.ShowDialog();
+                                if (sfd.FileName != string.Empty)
+                                {
+                                    File.Copy(c.RFPath, sfd.FileName);
+                                    c.ClearRFPath();
+                                }
+                            }
+                            else
+                            {
+                                c.ClearRFPath();
+                            }
+                        }
+                    }
                 }
             }
         }
 
         private void btn_RStop_Click(object sender, RoutedEventArgs e)
         {
-
+            TabItem o = this.tab_Main.SelectedItem as TabItem;
+            if (o != null)
+            {
+                ConnShow c = o.Content as ConnShow;
+                if (c != null)
+                {
+                    c.RStop();
+                    System.Windows.Forms.SaveFileDialog sfd = new System.Windows.Forms.SaveFileDialog();
+                    sfd.Filter = "(*.txt)|*.txt|(*.*)|*.*";
+                    sfd.ShowDialog();
+                    if (sfd.FileName != string.Empty)
+                    {
+                        File.Copy(c.RFPath, sfd.FileName);
+                        c.ClearRFPath();
+                    }
+                }
+            }
         }
 
         private void btn_Copy_Click(object sender, RoutedEventArgs e)
