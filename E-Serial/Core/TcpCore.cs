@@ -62,51 +62,78 @@ namespace E_Serial.Core
                     {
                         try
                         {
-                            DataReceived(this.tcp, new DataReceivedEventArgs() { Data = string.Format("Connect to {0}:{1}{2}", this.param.HostAddr, this.param.Port, Environment.NewLine) });
+                            DataReceived(this.tcp, new DataReceivedEventArgs() { Data = string.Format("Connect to {0}:{1}{2}", this.param.HostAddr, this.param.Port, Environment.NewLine), isNewLine = true });
                             this.tcp.Connect(param.HostAddr, param.Port);
                             this.Status = true;
-                            DataReceived(this.tcp, new DataReceivedEventArgs() { Data = string.Format("Connect to {0}:{1} successful!{2}", this.param.HostAddr, this.param.Port, Environment.NewLine) });
+                            DataReceived(this.tcp, new DataReceivedEventArgs() { Data = string.Format("Connect to {0}:{1} successful!{2}", this.param.HostAddr, this.param.Port, Environment.NewLine), isNewLine = true });
                         }
                         catch
                         {
-                            DataReceived(this.tcp, new DataReceivedEventArgs() { Data = string.Format("Connect to {0}:{1} failed: access denied{2}", this.param.HostAddr, this.param.Port, Environment.NewLine) });
+                            DataReceived(this.tcp, new DataReceivedEventArgs() { Data = string.Format("Connect to {0}:{1} failed: access denied{2}", this.param.HostAddr, this.param.Port, Environment.NewLine), isNewLine = true });
                         }
                     });
                     t1.Start();
                     if (!t1.Wait(10000))
                     {
-                        DataReceived(this.tcp, new DataReceivedEventArgs() { Data = string.Format("Connect to {0}:{1} failed: timeout{2}", this.param.HostAddr, this.param.Port, Environment.NewLine) });
+                        DataReceived(this.tcp, new DataReceivedEventArgs() { Data = string.Format("Connect to {0}:{1} failed: timeout{2}", this.param.HostAddr, this.param.Port, Environment.NewLine), isNewLine = true });
                     }
                 }
                 if (this.Status)
                 {
                     Task t2 = new Task(async () =>
                     {
-                        byte[] buf = new byte[1024];
-                        byte[] buf2;
+                        byte[] buf = new byte[4096];
+                        int iBuf = 0;
                         while (true)
                         {
                             if (Status)
                             {
-                                int n = 0;
+                                int x = 0;
                                 try
                                 {
-                                    n = this.tcp.GetStream().Read(buf, 0, buf.Length);
-                                    buf2 = new byte[n];
-                                    Array.Copy(buf, buf2, n);
+                                    x = this.tcp.GetStream().ReadByte();
                                 }
                                 catch (Exception ex)
                                 {
+                                    DataReceived(this.tcp, new DataReceivedEventArgs() { Data = Encoding.ASCII.GetString(buf, 0, iBuf) + Environment.NewLine, isNewLine = true });
+                                    if (this.fs != null)
+                                    {
+                                        await fs.WriteAsync(buf, 0, iBuf);
+                                        byte[] buft = Encoding.UTF8.GetBytes(Environment.NewLine);
+                                        await fs.WriteAsync(buft, 0, buft.Length);
+                                    }
+                                    iBuf = 0;
                                     Debug.WriteLine(ex.Message);
                                     this.Status = false;
-                                    DataReceived(this.tcp, new DataReceivedEventArgs() { Data = string.Format("Disconnect with {0}:{1}{2}", this.param.HostAddr, this.param.Port, Environment.NewLine) });
+                                    DataReceived(this.tcp, new DataReceivedEventArgs() { Data = string.Format("Disconnect with {0}:{1}{2}", this.param.HostAddr, this.param.Port, Environment.NewLine), isNewLine = true });
                                     break;
                                 }
-                                if (n > 0)
+                                if (x > -1)
                                 {
-                                    DataReceived(this.tcp, new DataReceivedEventArgs() { Data = Encoding.ASCII.GetString(buf2) });
-                                    if (this.fs != null)
-                                        await fs.WriteAsync(buf2, 0, buf2.Length);
+                                    if (x == 10)
+                                    {
+                                        DataReceived(this.tcp, new DataReceivedEventArgs() { Data = Encoding.ASCII.GetString(buf, 0, iBuf) + Environment.NewLine, isNewLine = true });
+                                        if (this.fs != null)
+                                        {
+                                            await fs.WriteAsync(buf, 0, iBuf);
+                                            byte[] buft = Encoding.UTF8.GetBytes(Environment.NewLine);
+                                            await fs.WriteAsync(buft, 0, buft.Length);
+                                        }
+                                        iBuf = 0;
+                                    }
+                                    else
+                                    {
+                                        buf[iBuf++] = (byte)x;
+                                        if (iBuf == buf.Length)
+                                        {
+                                            DataReceived(this.tcp, new DataReceivedEventArgs() { Data = Encoding.ASCII.GetString(buf, 0, iBuf), isNewLine = false });
+                                            if (this.fs != null)
+                                            {
+                                                await fs.WriteAsync(buf, 0, iBuf);
+                                            }
+                                            iBuf = 0;
+                                        }
+                                    }
                                 }
                             }
                             else

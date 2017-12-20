@@ -11,5 +11,7 @@ namespace E_Serial.Core
     public class DataReceivedEventArgs : EventArgs
     {
         public string Data { set; get; }
+
+        public bool isNewLine { set; get; }
     }
 }

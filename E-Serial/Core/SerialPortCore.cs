@@ -63,7 +63,7 @@ namespace E_Serial.Core
                 }
                 catch
                 {
-                    DataReceived(port, new E_Serial.Core.DataReceivedEventArgs() { Data = string.Format("Open {0} failed: access denied{1}", param.Type, Environment.NewLine) });
+                    DataReceived(port, new E_Serial.Core.DataReceivedEventArgs() { Data = string.Format("Open {0} failed: access denied{1}", param.Type, Environment.NewLine), isNewLine = true });
                     Status = false;
                     return;
                 }
@@ -82,12 +82,12 @@ namespace E_Serial.Core
                         catch (Exception ex)
                         {
                             Debug.WriteLine(ex.Message);
-                            DataReceived(port, new E_Serial.Core.DataReceivedEventArgs() { Data = string.Format("Disconnect with {0}{1}", param.Type, Environment.NewLine) });
+                            DataReceived(port, new E_Serial.Core.DataReceivedEventArgs() { Data = string.Format("Disconnect with {0}{1}", param.Type, Environment.NewLine), isNewLine = true });
                             Status = false;
                         }
                         if (indata != null)
                         {
-                            DataReceived(port, new E_Serial.Core.DataReceivedEventArgs() { Data = indata });
+                            DataReceived(port, new E_Serial.Core.DataReceivedEventArgs() { Data = indata, isNewLine = true });
                             if (fs != null)
                             {
                                 byte[] buf = Encoding.UTF8.GetBytes(indata);
