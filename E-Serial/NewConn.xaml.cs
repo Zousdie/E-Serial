@@ -73,16 +73,12 @@ namespace E_Serial
             {
                 this.grid_Serial.IsEnabled = false;
                 this.grid_Tcp.IsEnabled = true;
-                this.Param.HostAddr = "10.164.118.99";
-                this.Param.Port = 4001;
                 this.textBox_HostAddr.Focus();
             }
             else
             {
                 this.grid_Serial.IsEnabled = true;
                 this.grid_Tcp.IsEnabled = false;
-                this.Param.HostAddr = string.Empty;
-                this.Param.Port = 0;
                 this.comboBox_BaudRate.Focus();
             }
         }

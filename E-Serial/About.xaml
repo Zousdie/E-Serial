@@ -18,11 +18,12 @@
                       ShowMinButton="False"
                       ShowMaxRestoreButton="False">
     <Grid Margin="15 10">
-        <TextBlock Text="Develop By" FontFamily="Consolas" FontSize="14" Margin="0 0 0 60" VerticalAlignment="Center" HorizontalAlignment="Center" />
-        <StackPanel Margin="0 0 0 20" Orientation="Horizontal"  VerticalAlignment="Center" HorizontalAlignment="Center">
+        <TextBlock Text="Develop By" FontFamily="Consolas" FontSize="14" Margin="0 0 0 100" VerticalAlignment="Center" HorizontalAlignment="Center" />
+        <StackPanel Margin="0 0 0 60" Orientation="Horizontal"  VerticalAlignment="Center" HorizontalAlignment="Center">
             <Image Source="img/mr.png" Width="16" Height="16" VerticalAlignment="Center" SnapsToDevicePixels="True" ScrollViewer.VerticalScrollBarVisibility="Disabled"/>
             <TextBlock Text="MTBF Management Team" FontFamily="Consolas" FontSize="14" Margin="5 0 0 0" VerticalAlignment="Center" />
         </StackPanel>
-        <Image Source="img/ico.ico" Width="50" Height="50" HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="0 0 0 15"/>
+        <TextBlock Text="{Binding Version}" FontFamily="Comic Sans MS" FontSize="12" Margin="0 0 0 10" VerticalAlignment="Center" HorizontalAlignment="Center" FontStyle="Italic" />
+        <Image Source="img/ico.ico" Width="50" Height="50" HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="0 0 0 10"/>
     </Grid>
 </Controls:MetroWindow>

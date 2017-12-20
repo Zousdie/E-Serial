@@ -91,7 +91,11 @@ namespace E_Serial.Core
                             if (fs != null)
                             {
                                 byte[] buf = Encoding.UTF8.GetBytes(indata);
-                                await fs.WriteAsync(buf, 0, buf.Length);
+                                byte[] buf2 = new byte[buf.Length + 1];
+                                Array.Copy(buf, buf2, buf.Length - 1);
+                                buf2[buf2.Length - 1] = 10;
+                                buf2[buf2.Length - 2] = 13;
+                                await fs.WriteAsync(buf2, 0, buf2.Length);
                             }
                         }
                     }

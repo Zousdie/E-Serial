@@ -13,7 +13,10 @@
     MinHeight="600"
     MinWidth="960"
     SaveWindowPosition="True"
-    WindowStartupLocation="CenterScreen" Icon="img/ico.ico" Closed="MetroWindow_Closed">
+    WindowStartupLocation="CenterScreen"
+    Icon="img/ico.ico"
+    Loaded="MetroWindow_Loaded"
+    Closed="MetroWindow_Closed">
 
     <Controls:MetroWindow.RightWindowCommands>
         <Controls:WindowCommands ShowLastSeparator="False">
@@ -21,6 +24,18 @@
             <Button Content="About" Click="btn_About_Click" />
         </Controls:WindowCommands>
     </Controls:MetroWindow.RightWindowCommands>
+
+    <Controls:MetroWindow.Flyouts>
+        <Controls:FlyoutsControl x:Name="flyout_Pause">
+            <Controls:Flyout x:Name="statusflyout"
+                             Height="60"
+                             AutoCloseInterval="3000"
+                             IsAutoCloseEnabled="True"
+                             Position="Bottom">
+                <Label x:Name="status" FontSize="14" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" HorizontalAlignment="Center"/>
+            </Controls:Flyout>
+        </Controls:FlyoutsControl>
+    </Controls:MetroWindow.Flyouts>
 
     <Grid>
         <Grid.RowDefinitions>
@@ -39,6 +54,6 @@
             <Button Content="Close all"
                     ToolTip="Close all connection" Click="btn_CloseAll_Click"/>
         </Controls:WindowCommands>
-        <TabControl x:Name="tab_Main" Grid.Row="1" Margin="5,0,5,5" />
+        <TabControl x:Name="tab_Main" Grid.Row="1" Margin="5,0,5,5"/>
     </Grid>
 </Controls:MetroWindow>

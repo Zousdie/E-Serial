@@ -112,6 +112,7 @@ namespace E_Serial
 
         private void btn_RStart_Click(object sender, RoutedEventArgs e)
         {
+            Button btn = (Button)sender;
             TabItem o = this.tab_Main.SelectedItem as TabItem;
             if (o != null)
             {
@@ -120,6 +121,7 @@ namespace E_Serial
                 {
                     if (c.RStart())
                     {
+                        btn.Foreground = new SolidColorBrush(Color.FromRgb(0, 255, 0));
                         Debug.WriteLine("Record start");
                     }
                     else
@@ -127,6 +129,7 @@ namespace E_Serial
                         Debug.WriteLine("Record stop");
                         if (c.RStop())
                         {
+                            btn.Foreground = new SolidColorBrush(Color.FromRgb(255, 255, 255));
                             System.Windows.Forms.SaveFileDialog sfd = new System.Windows.Forms.SaveFileDialog();
                             sfd.Title = "Save";
                             sfd.Filter = "(*.txt)|*.txt|(*.*)|*.*";
@@ -179,6 +182,7 @@ namespace E_Serial
                                 Debug.WriteLine("Record restart");
                                 c.ClearRFPath();
                                 c.RStart();
+                                btn.Foreground = new SolidColorBrush(Color.FromRgb(0, 255, 0));
                             }
                         }
                     }
@@ -213,6 +217,11 @@ namespace E_Serial
             {
                 File.Delete(i);
             }
+        }
+
+        private void MetroWindow_Loaded(object sender, RoutedEventArgs e)
+        {
+            ThemeManager.ChangeAppStyle(Application.Current, ThemeManager.GetAccent(app.Accent), ThemeManager.GetAppTheme("BaseDark"));
         }
     }
 }

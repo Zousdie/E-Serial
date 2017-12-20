@@ -1,6 +1,7 @@
 ﻿using MahApps.Metro.Controls;
 using System;
 using System.Collections.Generic;
+using System.Deployment.Application;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -20,9 +21,16 @@ namespace E_Serial
     /// </summary>
     public partial class About : MetroWindow
     {
+        public string Version
+        {
+            set { }
+            get { return "version: " + ApplicationDeployment.CurrentDeployment.CurrentVersion; }
+        }
+
         public About()
         {
             InitializeComponent();
+            this.DataContext = this;
         }
     }
 }

@@ -82,7 +82,8 @@ namespace E_Serial.Core
                 {
                     Task t2 = new Task(async () =>
                     {
-                        byte[] buf = new byte[8];
+                        byte[] buf = new byte[1024];
+                        byte[] buf2;
                         while (true)
                         {
                             if (Status)
@@ -91,6 +92,8 @@ namespace E_Serial.Core
                                 try
                                 {
                                     n = this.tcp.GetStream().Read(buf, 0, buf.Length);
+                                    buf2 = new byte[n];
+                                    Array.Copy(buf, buf2, n);
                                 }
                                 catch (Exception ex)
                                 {
@@ -101,11 +104,10 @@ namespace E_Serial.Core
                                 }
                                 if (n > 0)
                                 {
-                                    DataReceived(this.tcp, new DataReceivedEventArgs() { Data = Encoding.ASCII.GetString(buf) });
+                                    DataReceived(this.tcp, new DataReceivedEventArgs() { Data = Encoding.ASCII.GetString(buf2) });
                                     if (this.fs != null)
-                                        await fs.WriteAsync(buf, 0, buf.Length);
+                                        await fs.WriteAsync(buf2, 0, buf2.Length);
                                 }
-                                Thread.Sleep(10);
                             }
                             else
                             {

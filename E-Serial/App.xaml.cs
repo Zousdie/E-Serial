@@ -16,6 +16,8 @@ namespace E_Serial
         private bool autoClear;
         private int autoClearLines;
         private string accent;
+        private string tcpHost;
+        private int tcpPort;
         private Configuration config;
 
         public bool AutoScroll
@@ -72,6 +74,32 @@ namespace E_Serial
             }
         }
 
+        public string TCPHost
+        {
+            set
+            {
+                tcpHost = value;
+                config.AppSettings.Settings["TCPHost"].Value = value;
+            }
+            get
+            {
+                return tcpHost;
+            }
+        }
+
+        public int TCPPort
+        {
+            set
+            {
+                tcpPort = value;
+                config.AppSettings.Settings["TCPPort"].Value = value.ToString();
+            }
+            get
+            {
+                return tcpPort;
+            }
+        }
+
         public string Tmp
         {
             set; get;
@@ -79,18 +107,16 @@ namespace E_Serial
 
         public App()
         {
-            this.autoScroll = Convert.ToBoolean(ConfigurationManager.AppSettings["AutoScroll"]);
-            this.autoClear = Convert.ToBoolean(ConfigurationManager.AppSettings["AutoClear"]);
-            this.autoClearLines = Convert.ToInt32(ConfigurationManager.AppSettings["AutoClearLines"]);
-            this.accent = ConfigurationManager.AppSettings["Accent"];
-            this.Tmp = ConfigurationManager.AppSettings["Tmp"];
-            this.config = System.Configuration.ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
-            this.Exit += (object sender, ExitEventArgs e) =>
-            {
-                config.Save(ConfigurationSaveMode.Modified);
-            };
             try
             {
+                this.autoScroll = Convert.ToBoolean(ConfigurationManager.AppSettings["AutoScroll"]);
+                this.autoClear = Convert.ToBoolean(ConfigurationManager.AppSettings["AutoClear"]);
+                this.autoClearLines = Convert.ToInt32(ConfigurationManager.AppSettings["AutoClearLines"]);
+                this.accent = ConfigurationManager.AppSettings["Accent"];
+                this.tcpHost = ConfigurationManager.AppSettings["TCPHost"];
+                this.tcpPort = Convert.ToInt32(ConfigurationManager.AppSettings["TCPPort"]);
+                this.Tmp = ConfigurationManager.AppSettings["Tmp"];
+                this.config = System.Configuration.ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
                 string tmpPath = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, this.Tmp);
                 if (!Directory.Exists(tmpPath))
                 {
@@ -103,6 +129,10 @@ namespace E_Serial
                 mb.ShowDialog();
                 this.OnExit(null);
             }
+            this.Exit += (object sender, ExitEventArgs e) =>
+            {
+                config.Save(ConfigurationSaveMode.Modified);
+            };
         }
     }
 }

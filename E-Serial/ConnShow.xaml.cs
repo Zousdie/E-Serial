@@ -1,4 +1,5 @@
 ﻿using E_Serial.Core;
+using MahApps.Metro.Controls;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -88,9 +89,11 @@ namespace E_Serial
                                     txt_Data.Text = s;
                                 }
                             if (!isPause)
+                            {
                                 this.txt_Data.AppendText(ea.Data);
-                            if (app.AutoScroll)
-                                this.txt_Data.ScrollToEnd();
+                                if (app.AutoScroll)
+                                    this.txt_Data.ScrollToEnd();
+                            }
                         });
                     }
                     catch (Exception ex)
@@ -157,7 +160,27 @@ namespace E_Serial
 
         private void txt_Data_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
+            MainWindow mw = (MainWindow)this.app.MainWindow;
             this.isPause = !this.isPause;
+            if (isPause)
+            {
+                mw.status.Content = "PAUSE!";
+                mw.statusflyout.IsAutoCloseEnabled = false;
+            }
+            else
+            {
+                mw.status.Content = "Restart";
+                mw.statusflyout.IsAutoCloseEnabled = true;
+            }
+            var flyout = mw.Flyouts.Items[0] as Flyout;
+            if (flyout != null)
+            {
+                if (flyout.IsOpen)
+                {
+                    flyout.AutoCloseInterval = 3000;
+                }
+                flyout.IsOpen = !flyout.IsOpen;
+            }
         }
     }
 }

@@ -13,8 +13,6 @@ namespace E_Serial
         private int baudRate = 115200;
         private int data = 8;
         private int stopBits = 1;
-        private string hostAddr = "10.164.118.99";
-        private int port = 4001;
         private string savePath;
 
         public event PropertyChangedEventHandler PropertyChanged;
@@ -63,20 +61,20 @@ namespace E_Serial
         {
             set
             {
-                this.hostAddr = value;
+                ((App)App.Current).TCPHost = value;
                 this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("HostAddr"));
             }
-            get { return this.hostAddr; }
+            get { return ((App)App.Current).TCPHost; }
         }
 
         public int Port
         {
             set
             {
-                this.port = value;
+                ((App)App.Current).TCPPort = value;
                 this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Port"));
             }
-            get { return this.port; }
+            get { return ((App)App.Current).TCPPort; }
         }
 
         public string SavePath
