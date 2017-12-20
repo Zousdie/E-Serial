@@ -22,48 +22,49 @@ namespace E_Serial.Core
 
         FileStream IConnCore.fs
         {
-            get { return this.fs; }
+            get { return fs; }
         }
 
         public bool Status
         {
             get
             {
-                return this.port != null && this.port.IsOpen;
+                return port != null && port.IsOpen;
             }
             set
             {
-                this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Status"));
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Status"));
             }
         }
 
         public SerialPortCore(NewConnParam p)
         {
-            this.param = p;
-            this.port = new SerialPort(p.Type, p.BaudRate, Parity.None, p.Data, (StopBits)p.StopBits);
+            param = p;
+            port = new SerialPort(p.Type, p.BaudRate, Parity.None, p.Data, (StopBits)p.StopBits);
             if (!string.IsNullOrWhiteSpace(p.SavePath))
-                this.fs = File.Create(p.SavePath);
+                fs = File.Create(p.SavePath);
             Debug.WriteLine("new SerialPortCore");
         }
 
         ~SerialPortCore()
         {
-            this.Close();
+            Close();
             Debug.WriteLine("~ SerialPortCore");
         }
 
         public void Open()
         {
-            if (this.port != null && !this.port.IsOpen)
+            if (port != null && !port.IsOpen)
             {
                 try
                 {
-                    this.port.Open();
-                    this.Status = true;
+                    port.Open();
+                    Status = true;
                 }
                 catch
                 {
-                    DataReceived(this.port, new E_Serial.Core.DataReceivedEventArgs() { Data = string.Format("Open {0} failed: access denied{1}", this.param.Type, Environment.NewLine) });
+                    DataReceived(port, new E_Serial.Core.DataReceivedEventArgs() { Data = string.Format("Open {0} failed: access denied{1}", param.Type, Environment.NewLine) });
+                    Status = false;
                     return;
                 }
             }
@@ -71,28 +72,47 @@ namespace E_Serial.Core
             {
                 while (true)
                 {
-                    try
+                    if (Status)
                     {
-                        if (this.port != null && this.port.IsOpen)
+                        string indata = null;
+                        try
                         {
-                            string indata = this.port.ReadLine();
-                            DataReceived(this.port, new E_Serial.Core.DataReceivedEventArgs() { Data = indata });
-                            if (this.fs != null)
+                            indata = port.ReadLine();
+                        }
+                        catch (Exception ex)
+                        {
+                            Debug.WriteLine(ex.Message);
+                            DataReceived(port, new E_Serial.Core.DataReceivedEventArgs() { Data = string.Format("Disconnect with {0}{1}", param.Type, Environment.NewLine) });
+                            Status = false;
+                        }
+                        if (indata != null)
+                        {
+                            DataReceived(port, new E_Serial.Core.DataReceivedEventArgs() { Data = indata });
+                            if (fs != null)
                             {
                                 byte[] buf = Encoding.UTF8.GetBytes(indata);
                                 await fs.WriteAsync(buf, 0, buf.Length);
                             }
                         }
-                        else
-                        {
-                            break;
-                        }
                     }
-                    catch (Exception ex)
+                    else if (port == null)
                     {
-                        Debug.WriteLine(ex.Message);
-                        DataReceived(this.port, new E_Serial.Core.DataReceivedEventArgs() { Data = string.Format("Disconnect with {0}{1}", this.param.Type, Environment.NewLine) });
+                        Status = false;
+                        Debug.WriteLine("SerialPort dispose, task exit");
                         break;
+                    }
+                    else if (!port.IsOpen)
+                    {
+                        try
+                        {
+                            port.Open();
+                            Status = true;
+                        }
+                        catch (Exception ex)
+                        {
+                            Debug.WriteLine(ex.Message);
+                        }
+                        Debug.WriteLine("SerialPort close, try reopening");
                     }
                 }
                 Debug.WriteLine("SerialPort read stop");
@@ -100,26 +120,36 @@ namespace E_Serial.Core
             t.Start();
         }
 
+        public void Write(string data)
+        {
+            try
+            {
+                if (Status)
+                    port.Write(data);
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine("SerialPort write error");
+            }
+        }
+
         public void Close()
         {
-            if (port != null && port.IsOpen)
+            if (Status)
             {
                 port.Close();
-                port.Dispose();
                 port = null;
-                Debug.WriteLine("close SerialPort");
+            }
+            else if (port != null)
+            {
+                port = null;
             }
             if (fs != null)
             {
                 fs.Close();
-                fs.Dispose();
                 fs = null;
             }
-        }
-
-        public void Write(string data)
-        {
-            this.port.Write(data);
+            Debug.WriteLine("SerialPort close");
         }
     }
 }

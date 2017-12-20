@@ -20,9 +20,6 @@ using System.IO;
 
 namespace E_Serial
 {
-    /// <summary>
-    /// MainWindow.xaml 的交互逻辑
-    /// </summary>
     public partial class MainWindow : MetroWindow
     {
         private App app;
@@ -78,6 +75,8 @@ namespace E_Serial
             ConnShow tc = (ConnShow)t.Content;
             tc.Icc.Close();
             this.tabMap.Remove(t.Header.ToString());
+            tc.RStop();
+            tc.ClearRFPath();
         }
 
         private void btn_Clear_Click(object sender, RoutedEventArgs e)
@@ -119,13 +118,41 @@ namespace E_Serial
                 ConnShow c = o.Content as ConnShow;
                 if (c != null)
                 {
-                    if (!c.RStart())
+                    if (c.RStart())
                     {
-                        Debug.WriteLine("Record error");
-                        if (c.RFPath != string.Empty)
+                        Debug.WriteLine("Record start");
+                    }
+                    else
+                    {
+                        Debug.WriteLine("Record stop");
+                        if (c.RStop())
                         {
-                            MessageBoxResult dr = MessageBox.Show("Save last result?", "Tooltip", MessageBoxButton.OKCancel, MessageBoxImage.Question);
-                            if (dr == MessageBoxResult.OK)
+                            System.Windows.Forms.SaveFileDialog sfd = new System.Windows.Forms.SaveFileDialog();
+                            sfd.Title = "Save";
+                            sfd.Filter = "(*.txt)|*.txt|(*.*)|*.*";
+                            sfd.ShowDialog();
+                            if (sfd.FileName != string.Empty)
+                            {
+                                try
+                                {
+                                    File.Copy(c.RFPath, sfd.FileName, true);
+                                }
+                                catch (System.IO.IOException)
+                                {
+                                    MsgBox mb = new MsgBox("Save", "Access denied: This file is in use.", "OK");
+                                    mb.Owner = this;
+                                    mb.ShowDialog();
+                                    return;
+                                }
+                                c.ClearRFPath();
+                            }
+                        }
+                        else if (c.RFPath != string.Empty)
+                        {
+                            MsgBox mb = new MsgBox("Save", "Save last result, or start new recording?", "Save", "Restart");
+                            mb.Owner = this;
+                            mb.ShowDialog();
+                            if (mb.Result)
                             {
                                 System.Windows.Forms.SaveFileDialog sfd = new System.Windows.Forms.SaveFileDialog();
                                 sfd.Title = "Please save last result";
@@ -133,36 +160,27 @@ namespace E_Serial
                                 sfd.ShowDialog();
                                 if (sfd.FileName != string.Empty)
                                 {
-                                    File.Copy(c.RFPath, sfd.FileName);
+                                    try
+                                    {
+                                        File.Copy(c.RFPath, sfd.FileName, true);
+                                    }
+                                    catch (System.IO.IOException)
+                                    {
+                                        MsgBox mb2 = new MsgBox("Save", "Access denied: This file is in use.", "OK");
+                                        mb2.Owner = this;
+                                        mb2.ShowDialog();
+                                        return;
+                                    }
                                     c.ClearRFPath();
                                 }
                             }
                             else
                             {
+                                Debug.WriteLine("Record restart");
                                 c.ClearRFPath();
+                                c.RStart();
                             }
                         }
-                    }
-                }
-            }
-        }
-
-        private void btn_RStop_Click(object sender, RoutedEventArgs e)
-        {
-            TabItem o = this.tab_Main.SelectedItem as TabItem;
-            if (o != null)
-            {
-                ConnShow c = o.Content as ConnShow;
-                if (c != null)
-                {
-                    c.RStop();
-                    System.Windows.Forms.SaveFileDialog sfd = new System.Windows.Forms.SaveFileDialog();
-                    sfd.Filter = "(*.txt)|*.txt|(*.*)|*.*";
-                    sfd.ShowDialog();
-                    if (sfd.FileName != string.Empty)
-                    {
-                        File.Copy(c.RFPath, sfd.FileName);
-                        c.ClearRFPath();
                     }
                 }
             }
@@ -179,6 +197,21 @@ namespace E_Serial
                     c.txt_Data.SelectAll();
                     c.txt_Data.Copy();
                 }
+            }
+        }
+
+        private void MetroWindow_Closed(object sender, EventArgs e)
+        {
+            foreach (var item in tabMap)
+            {
+                ConnShow tc = (ConnShow)(item.Value.Content);
+                tc.Icc.Close();
+                tc.RStop();
+                tc.ClearRFPath();
+            }
+            foreach (var i in Directory.GetFiles(System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, app.Tmp), "*.tmp", SearchOption.TopDirectoryOnly))
+            {
+                File.Delete(i);
             }
         }
     }

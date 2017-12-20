@@ -20,7 +20,10 @@
                  IsUndoEnabled="False"
                  AcceptsReturn="False"
                  TextOptions.TextFormattingMode="Display"
-                 FontFamily="Consolas"/>
+                 FontFamily="Consolas"
+                 ToolTip="Double click to pause or restart"
+                 MouseDoubleClick="txt_Data_MouseDoubleClick"
+                 />
         <Grid Grid.Row="1">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="19" />

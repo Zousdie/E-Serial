@@ -52,21 +52,6 @@ namespace E_Serial.Core
             Debug.WriteLine("~ TcpCore");
         }
 
-        public void Close()
-        {
-            if (this.tcp != null && this.tcp.Connected)
-            {
-                this.tcp.Close();
-                this.tcp = null;
-            }
-            if (fs != null)
-            {
-                fs.Close();
-                fs.Dispose();
-                fs = null;
-            }
-        }
-
         public void Open()
         {
             Task t = new Task(() =>
@@ -100,30 +85,31 @@ namespace E_Serial.Core
                         byte[] buf = new byte[8];
                         while (true)
                         {
-                            try
+                            if (Status)
                             {
-                                if (this.tcp != null && this.tcp.Connected)
+                                int n = 0;
+                                try
                                 {
-                                    int n = this.tcp.GetStream().Read(buf, 0, buf.Length);
-                                    if (n > 0)
-                                    {
-                                        DataReceived(this.tcp, new DataReceivedEventArgs() { Data = Encoding.ASCII.GetString(buf) });
-                                        if (this.fs != null)
-                                            await fs.WriteAsync(buf, 0, buf.Length);
-                                    }
-                                    Thread.Sleep(10);
+                                    n = this.tcp.GetStream().Read(buf, 0, buf.Length);
                                 }
-                                else
+                                catch (Exception ex)
                                 {
+                                    Debug.WriteLine(ex.Message);
                                     this.Status = false;
+                                    DataReceived(this.tcp, new DataReceivedEventArgs() { Data = string.Format("Disconnect with {0}:{1}{2}", this.param.HostAddr, this.param.Port, Environment.NewLine) });
                                     break;
                                 }
+                                if (n > 0)
+                                {
+                                    DataReceived(this.tcp, new DataReceivedEventArgs() { Data = Encoding.ASCII.GetString(buf) });
+                                    if (this.fs != null)
+                                        await fs.WriteAsync(buf, 0, buf.Length);
+                                }
+                                Thread.Sleep(10);
                             }
-                            catch (Exception ex)
+                            else
                             {
-                                Debug.WriteLine(ex.Message);
                                 this.Status = false;
-                                DataReceived(this.tcp, new DataReceivedEventArgs() { Data = string.Format("Disconnect with {0}:{1}{2}", this.param.HostAddr, this.param.Port, Environment.NewLine) });
                                 break;
                             }
                         }
@@ -141,7 +127,28 @@ namespace E_Serial.Core
             {
                 NetworkStream ns = this.tcp.GetStream();
                 byte[] buf = Encoding.ASCII.GetBytes(data);
-                ns.Write(buf, 0, buf.Length);
+                try
+                {
+                    ns.Write(buf, 0, buf.Length);
+                }
+                catch
+                {
+                    Debug.WriteLine("TCP write error");
+                }
+            }
+        }
+
+        public void Close()
+        {
+            if (Status)
+            {
+                this.tcp.Close();
+                this.tcp = null;
+            }
+            if (fs != null)
+            {
+                fs.Close();
+                fs = null;
             }
         }
     }

@@ -13,7 +13,7 @@
     MinHeight="600"
     MinWidth="960"
     SaveWindowPosition="True"
-    WindowStartupLocation="CenterScreen" Icon="img/ico.ico">
+    WindowStartupLocation="CenterScreen" Icon="img/ico.ico" Closed="MetroWindow_Closed">
 
     <Controls:MetroWindow.RightWindowCommands>
         <Controls:WindowCommands ShowLastSeparator="False">
@@ -34,10 +34,8 @@
                     ToolTip="Clear current window" Click="btn_Clear_Click"/>
             <Button Content="Copy"
                     ToolTip="Copy current content to clipboard" Click="btn_Copy_Click"/>
-            <Button Content="Start Record"
-                    ToolTip="Start record" Click="btn_RStart_Click" />
-            <Button Content="Stop Record"
-                    ToolTip="Stop record" Click="btn_RStop_Click" />
+            <Button Content="Record"
+                    ToolTip="Start or stop record" Click="btn_RStart_Click" />
             <Button Content="Close all"
                     ToolTip="Close all connection" Click="btn_CloseAll_Click"/>
         </Controls:WindowCommands>

@@ -1,6 +1,7 @@
 ﻿using E_Serial.Core;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -28,6 +29,7 @@ namespace E_Serial
         private App app;
         private FileStream rFS;
         private string rFPath;
+        private bool isPause;
 
         public ConnShow(IConnCore icc)
         {
@@ -37,6 +39,7 @@ namespace E_Serial
             this.app = (App)Application.Current;
             this.rFS = null;
             this.rFPath = string.Empty;
+            this.isPause = false;
         }
 
         public IConnCore Icc
@@ -59,7 +62,11 @@ namespace E_Serial
 
         public void ClearRFPath()
         {
-            File.Delete(this.rFPath);
+            try
+            {
+                File.Delete(this.rFPath);
+            }
+            catch { }
             this.rFPath = string.Empty;
         }
 
@@ -80,7 +87,8 @@ namespace E_Serial
                                     txt_Data.Clear();
                                     txt_Data.Text = s;
                                 }
-                            this.txt_Data.AppendText(ea.Data);
+                            if (!isPause)
+                                this.txt_Data.AppendText(ea.Data);
                             if (app.AutoScroll)
                                 this.txt_Data.ScrollToEnd();
                         });
@@ -100,7 +108,7 @@ namespace E_Serial
         {
             if (this.rFS == null && this.rFPath == string.Empty && isRun)
             {
-                rFPath = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "../../tmp", Guid.NewGuid().ToString() + ".tmp");
+                rFPath = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, app.Tmp, Guid.NewGuid().ToString() + ".tmp");
                 rFS = File.Create(rFPath);
                 icc.DataReceived += rDataReceived;
                 return true;
@@ -111,22 +119,24 @@ namespace E_Serial
             }
         }
 
-        public async void RStop()
+        public bool RStop()
         {
             if (this.rFS != null && this.rFPath != string.Empty && isRun)
             {
                 icc.DataReceived -= rDataReceived;
-                await rFS.FlushAsync();
                 rFS.Close();
-                rFS.Dispose();
                 rFS = null;
+                return true;
             }
+            else
+                return false;
         }
 
         private async void rDataReceived(object sendor, Core.DataReceivedEventArgs ea)
         {
             byte[] buf = Encoding.UTF8.GetBytes(ea.Data);
-            await rFS.WriteAsync(buf, 0, buf.Length);
+            try { await rFS.WriteAsync(buf, 0, buf.Length); }
+            catch { }
         }
 
         private void txt_Write_KeyDown(object sender, KeyEventArgs e)
@@ -143,6 +153,11 @@ namespace E_Serial
         {
             this.StartLoad();
             this.txt_Write.Focus();
+        }
+
+        private void txt_Data_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            this.isPause = !this.isPause;
         }
     }
 }

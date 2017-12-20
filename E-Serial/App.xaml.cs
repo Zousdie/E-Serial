@@ -3,15 +3,13 @@ using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 
 namespace E_Serial
 {
-    /// <summary>
-    /// App.xaml 的交互逻辑
-    /// </summary>
     public partial class App : Application
     {
         private bool autoScroll;
@@ -74,17 +72,37 @@ namespace E_Serial
             }
         }
 
+        public string Tmp
+        {
+            set; get;
+        }
+
         public App()
         {
             this.autoScroll = Convert.ToBoolean(ConfigurationManager.AppSettings["AutoScroll"]);
             this.autoClear = Convert.ToBoolean(ConfigurationManager.AppSettings["AutoClear"]);
             this.autoClearLines = Convert.ToInt32(ConfigurationManager.AppSettings["AutoClearLines"]);
             this.accent = ConfigurationManager.AppSettings["Accent"];
+            this.Tmp = ConfigurationManager.AppSettings["Tmp"];
             this.config = System.Configuration.ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
             this.Exit += (object sender, ExitEventArgs e) =>
             {
                 config.Save(ConfigurationSaveMode.Modified);
             };
+            try
+            {
+                string tmpPath = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, this.Tmp);
+                if (!Directory.Exists(tmpPath))
+                {
+                    Directory.CreateDirectory(tmpPath);
+                }
+            }
+            catch (Exception e)
+            {
+                MsgBox mb = new MsgBox("ERROR", e.Message, "OK");
+                mb.ShowDialog();
+                this.OnExit(null);
+            }
         }
     }
 }
