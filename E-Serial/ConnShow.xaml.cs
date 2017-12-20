@@ -31,6 +31,7 @@ namespace E_Serial
         private FileStream rFS;
         private string rFPath;
         private bool isPause;
+        private bool isNewLine = true;
 
         public ConnShow(IConnCore icc)
         {
@@ -90,11 +91,12 @@ namespace E_Serial
                                 }
                             if (!isPause)
                             {
-                                //if (ea.isNewLine)
-                                //{
-                                //    this.txt_Data.AppendText(string.Format("[{0}] ", DateTime.Now.TimeOfDay));
-                                //}
+                                if (app.Timestamp && isNewLine)
+                                {
+                                    this.txt_Data.AppendText(string.Format("[{0}] ", DateTime.Now.TimeOfDay));
+                                }
                                 this.txt_Data.AppendText(ea.Data);
+                                isNewLine = ea.isNewLine;
                                 if (app.AutoScroll)
                                     this.txt_Data.ScrollToEnd();
                             }
