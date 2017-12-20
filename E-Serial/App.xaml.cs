@@ -15,6 +15,7 @@ namespace E_Serial
         private bool autoScroll;
         private bool autoClear;
         private int autoClearLines;
+        private bool timestamp;
         private string accent;
         private string tcpHost;
         private int tcpPort;
@@ -56,6 +57,19 @@ namespace E_Serial
             get
             {
                 return this.autoClearLines;
+            }
+        }
+
+        public bool Timestamp
+        {
+            set
+            {
+                this.timestamp = value;
+                config.AppSettings.Settings["Timestamp"].Value = value.ToString();
+            }
+            get
+            {
+                return this.timestamp;
             }
         }
 
@@ -112,6 +126,7 @@ namespace E_Serial
                 this.autoScroll = Convert.ToBoolean(ConfigurationManager.AppSettings["AutoScroll"]);
                 this.autoClear = Convert.ToBoolean(ConfigurationManager.AppSettings["AutoClear"]);
                 this.autoClearLines = Convert.ToInt32(ConfigurationManager.AppSettings["AutoClearLines"]);
+                this.timestamp = Convert.ToBoolean(ConfigurationManager.AppSettings["Timestamp"]);
                 this.accent = ConfigurationManager.AppSettings["Accent"];
                 this.tcpHost = ConfigurationManager.AppSettings["TCPHost"];
                 this.tcpPort = Convert.ToInt32(ConfigurationManager.AppSettings["TCPPort"]);

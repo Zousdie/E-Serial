@@ -90,10 +90,10 @@ namespace E_Serial
                                 }
                             if (!isPause)
                             {
-                                if (ea.isNewLine)
-                                {
-                                    this.txt_Data.AppendText(string.Format("[{0}] ", DateTime.Now.TimeOfDay));
-                                }
+                                //if (ea.isNewLine)
+                                //{
+                                //    this.txt_Data.AppendText(string.Format("[{0}] ", DateTime.Now.TimeOfDay));
+                                //}
                                 this.txt_Data.AppendText(ea.Data);
                                 if (app.AutoScroll)
                                     this.txt_Data.ScrollToEnd();

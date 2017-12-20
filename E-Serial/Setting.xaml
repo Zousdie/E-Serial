@@ -27,6 +27,7 @@
             <RowDefinition Height="*"/>
             <RowDefinition Height="*"/>
             <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         <TextBlock Grid.Row="0" Grid.Column="0" Text="Style" HorizontalAlignment="Left" VerticalAlignment="Center" />
         <ComboBox SelectedValue="{Binding Accent}" SelectedValuePath="Content" Grid.Row="0" Grid.Column="1" Margin="20 0 10 0" VerticalAlignment="Center">
@@ -50,6 +51,8 @@
             <ComboBoxItem Content="1000"/>
             <ComboBoxItem Content="500"/>
         </ComboBox>
+        <TextBlock Grid.Row="4" Grid.Column="0" Text="Timestamp" HorizontalAlignment="Left" VerticalAlignment="Center" />
+        <Controls:ToggleSwitch IsChecked="{Binding Timestamp}" Grid.Row="4" Grid.Column="1" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" VerticalAlignment="Center" />
     </Grid>
 
 </Controls:MetroWindow>
