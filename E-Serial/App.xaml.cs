@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
+using System.Deployment.Application;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -19,6 +20,7 @@ namespace E_Serial
         private string accent;
         private string tcpHost;
         private int tcpPort;
+        private string version;
         private Configuration config;
 
         public bool AutoScroll
@@ -119,6 +121,8 @@ namespace E_Serial
             set; get;
         }
 
+        public string Version { get { return version; } }
+
         public App()
         {
             try
@@ -136,6 +140,15 @@ namespace E_Serial
                 if (!Directory.Exists(tmpPath))
                 {
                     Directory.CreateDirectory(tmpPath);
+                }
+                try
+                {
+                    version = ApplicationDeployment.CurrentDeployment.CurrentVersion.ToString();
+                    config.AppSettings.Settings["V"].Value = version;
+                }
+                catch
+                {
+                    version = ConfigurationManager.AppSettings["V"];
                 }
             }
             catch (Exception e)

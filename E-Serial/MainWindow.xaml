@@ -27,12 +27,13 @@
 
     <Controls:MetroWindow.Flyouts>
         <Controls:FlyoutsControl x:Name="flyout_Pause">
-            <Controls:Flyout x:Name="statusflyout"
+            <Controls:Flyout x:Name="flyout_Pause_Flyout"
                              Height="60"
-                             AutoCloseInterval="3000"
-                             IsAutoCloseEnabled="True"
+                             AutoCloseInterval="1500"
+                             IsAutoCloseEnabled="{Binding FlyoutPauseAutoClose}"
+                             IsOpen="{Binding FlyoutPauseShow}"
                              Position="Bottom">
-                <Label x:Name="status" FontSize="14" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" HorizontalAlignment="Center"/>
+                <Label x:Name="flyout_Pause_Status" Content="{Binding FlyoutPauseContent}" FontSize="14" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" HorizontalAlignment="Center"/>
             </Controls:Flyout>
         </Controls:FlyoutsControl>
     </Controls:MetroWindow.Flyouts>
@@ -54,6 +55,6 @@
             <Button Content="Close all"
                     ToolTip="Close all connection" Click="btn_CloseAll_Click"/>
         </Controls:WindowCommands>
-        <TabControl x:Name="tab_Main" Grid.Row="1" Margin="5,0,5,5"/>
+        <TabControl x:Name="tab_Main" Grid.Row="1" Margin="5,0,5,5" SelectionChanged="tab_Main_SelectionChanged"/>
     </Grid>
 </Controls:MetroWindow>

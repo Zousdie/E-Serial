@@ -82,7 +82,7 @@ namespace E_Serial.Core
                 {
                     Task t2 = new Task(async () =>
                     {
-                        byte[] buf = new byte[4096];
+                        byte[] buf = new byte[2048];
                         int iBuf = 0;
                         while (true)
                         {

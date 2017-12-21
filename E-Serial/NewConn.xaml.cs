@@ -55,6 +55,12 @@ namespace E_Serial
 
         private void btn_OK_Click(object sender, RoutedEventArgs e)
         {
+            try
+            {
+                ((App)App.Current).TCPHost = this.Param.HostAddr;
+                ((App)App.Current).TCPPort = this.Param.Port;
+            }
+            catch { }
             this.Close();
         }
 
@@ -74,6 +80,8 @@ namespace E_Serial
                 this.grid_Serial.IsEnabled = false;
                 this.grid_Tcp.IsEnabled = true;
                 this.textBox_HostAddr.Focus();
+                this.Param.HostAddr = ((App)App.Current).TCPHost;
+                this.Param.Port = ((App)App.Current).TCPPort;
             }
             else
             {

@@ -17,17 +17,66 @@ using System.Diagnostics;
 using E_Serial.Core;
 using MahApps.Metro;
 using System.IO;
+using System.ComponentModel;
 
 namespace E_Serial
 {
-    public partial class MainWindow : MetroWindow
+    public partial class MainWindow : MetroWindow, INotifyPropertyChanged
     {
         private App app;
         private Dictionary<string, TabItem> tabMap;
 
+        private bool flyoutPauseShow;
+        private bool flyoutPauseAutoClose;
+        private string flyoutPauseContent;
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
         public App CurrentApp
         {
             get { return app; }
+        }
+
+        public bool FlyoutPauseShow
+        {
+            get
+            {
+                return flyoutPauseShow;
+            }
+
+            set
+            {
+                flyoutPauseShow = value;
+                this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("FlyoutPauseShow"));
+            }
+        }
+
+        public bool FlyoutPauseAutoClose
+        {
+            get
+            {
+                return flyoutPauseAutoClose;
+            }
+
+            set
+            {
+                flyoutPauseAutoClose = value;
+                this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("FlyoutPauseAutoClose"));
+            }
+        }
+
+        public string FlyoutPauseContent
+        {
+            get
+            {
+                return flyoutPauseContent;
+            }
+
+            set
+            {
+                flyoutPauseContent = value;
+                this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("FlyoutPauseContent"));
+            }
         }
 
         public MainWindow()
@@ -35,6 +84,9 @@ namespace E_Serial
             InitializeComponent();
             tabMap = new Dictionary<string, TabItem>();
             app = (App)App.Current;
+            FlyoutPauseShow = false;
+            FlyoutPauseAutoClose = true;
+            FlyoutPauseContent = "";
         }
 
         private void btn_New_Click(object sender, RoutedEventArgs e)
@@ -87,6 +139,28 @@ namespace E_Serial
                 ConnShow c = o.Content as ConnShow;
                 if (c != null)
                     c.txt_Data.Clear();
+            }
+        }
+
+        private void tab_Main_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            TabItem o = tab_Main.SelectedItem as TabItem;
+            if (o != null)
+            {
+                ConnShow c = o.Content as ConnShow;
+                if (c != null)
+                {
+                    if (c.IsPause)
+                    {
+                        FlyoutPauseContent = "PAUSE!";
+                        FlyoutPauseAutoClose = false;
+                        FlyoutPauseShow = true;
+                    }
+                    else
+                    {
+                        FlyoutPauseShow = false;
+                    }
+                }
             }
         }
 
@@ -222,6 +296,7 @@ namespace E_Serial
         private void MetroWindow_Loaded(object sender, RoutedEventArgs e)
         {
             ThemeManager.ChangeAppStyle(Application.Current, ThemeManager.GetAccent(app.Accent), ThemeManager.GetAppTheme("BaseDark"));
+            this.DataContext = this;
         }
     }
 }

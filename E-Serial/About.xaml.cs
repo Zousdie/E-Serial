@@ -24,7 +24,7 @@ namespace E_Serial
         public string Version
         {
             set { }
-            get { return "version: " + ApplicationDeployment.CurrentDeployment.CurrentVersion; }
+            get { return "version: " + ((App)App.Current).Version; }
         }
 
         public About()

@@ -30,18 +30,18 @@ namespace E_Serial
         private App app;
         private FileStream rFS;
         private string rFPath;
-        private bool isPause;
         private bool isNewLine = true;
 
         public ConnShow(IConnCore icc)
         {
             InitializeComponent();
             this.icc = icc;
-            this.isRun = false;
-            this.app = (App)Application.Current;
-            this.rFS = null;
-            this.rFPath = string.Empty;
-            this.isPause = false;
+            isRun = false;
+            app = (App)Application.Current;
+            rFS = null;
+            rFPath = string.Empty;
+            IsPause = false;
+            this.DataContext = icc;
         }
 
         public IConnCore Icc
@@ -51,7 +51,7 @@ namespace E_Serial
                 return icc;
             }
 
-            set
+            private set
             {
                 icc = value;
             }
@@ -61,6 +61,8 @@ namespace E_Serial
         {
             get { return this.rFPath; }
         }
+
+        public bool IsPause { get; set; }
 
         public void ClearRFPath()
         {
@@ -89,11 +91,11 @@ namespace E_Serial
                                     txt_Data.Clear();
                                     txt_Data.Text = s;
                                 }
-                            if (!isPause)
+                            if (!IsPause)
                             {
                                 if (app.Timestamp && isNewLine)
                                 {
-                                    this.txt_Data.AppendText(string.Format("[{0}] ", DateTime.Now.TimeOfDay));
+                                    this.txt_Data.AppendText(string.Format("[{0}] ", DateTime.Now.ToString("MM/dd HH:mm:ss.ffff")));
                                 }
                                 this.txt_Data.AppendText(ea.Data);
                                 isNewLine = ea.isNewLine;
@@ -167,26 +169,18 @@ namespace E_Serial
         private void txt_Data_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
             MainWindow mw = (MainWindow)this.app.MainWindow;
-            this.isPause = !this.isPause;
-            if (isPause)
+            this.IsPause = !this.IsPause;
+            if (IsPause)
             {
-                mw.status.Content = "PAUSE!";
-                mw.statusflyout.IsAutoCloseEnabled = false;
+                mw.FlyoutPauseContent = "PAUSE!";
+                mw.FlyoutPauseAutoClose = false;
             }
             else
             {
-                mw.status.Content = "Restart";
-                mw.statusflyout.IsAutoCloseEnabled = true;
+                mw.FlyoutPauseContent = "Restart!";
+                mw.FlyoutPauseAutoClose = true;
             }
-            var flyout = mw.Flyouts.Items[0] as Flyout;
-            if (flyout != null)
-            {
-                if (flyout.IsOpen)
-                {
-                    flyout.AutoCloseInterval = 3000;
-                }
-                flyout.IsOpen = !flyout.IsOpen;
-            }
+            mw.FlyoutPauseShow = true;
         }
     }
 }
