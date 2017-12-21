@@ -133,7 +133,7 @@ namespace E_Serial.Core
             }
             catch (Exception ex)
             {
-                Debug.WriteLine("SerialPort write error");
+                Debug.WriteLine("SerialPort write error： {0}", ex.Message);
             }
         }
 
