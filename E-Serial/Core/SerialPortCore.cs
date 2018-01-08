@@ -85,17 +85,14 @@ namespace E_Serial.Core
                             DataReceived(port, new E_Serial.Core.DataReceivedEventArgs() { Data = string.Format("Disconnect with {0}{1}", param.Type, Environment.NewLine), isNewLine = true });
                             Status = false;
                         }
-                        if (indata != null)
+                        if (!string.IsNullOrEmpty(indata))
                         {
                             DataReceived(port, new E_Serial.Core.DataReceivedEventArgs() { Data = indata, isNewLine = true });
                             if (fs != null)
                             {
                                 byte[] buf = Encoding.UTF8.GetBytes(indata);
-                                byte[] buf2 = new byte[buf.Length + 1];
-                                Array.Copy(buf, buf2, buf.Length - 1);
-                                buf2[buf2.Length - 1] = 10;
-                                buf2[buf2.Length - 2] = 13;
-                                await fs.WriteAsync(buf2, 0, buf2.Length);
+                                await fs.WriteAsync(buf, 0, buf.Length);
+                                await fs.WriteAsync(new byte[] { 10 }, 0, 1);
                             }
                         }
                     }
