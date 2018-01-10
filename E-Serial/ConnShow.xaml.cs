@@ -31,7 +31,7 @@ namespace E_Serial
         private App app;
         private FileStream rFS;
         private string rFPath;
-        private bool isNewLine = true;
+        private Queue<Core.DataReceivedEventArgs> dataQue;
 
         public ConnShow(IConnCore icc)
         {
@@ -43,10 +43,7 @@ namespace E_Serial
             rFPath = string.Empty;
             IsPause = false;
             this.DataContext = icc;
-
-            icc.DataReceived += dataReceived;
-            icc.Open();
-            isRun = true;
+            dataQue = new Queue<Core.DataReceivedEventArgs>();
         }
 
         public IConnCore Icc
@@ -125,7 +122,7 @@ namespace E_Serial
                     if (app.AutoClear && txt_Data.LineCount >= app.AutoClearLines)
                     {
                         StringCollection lines = new StringCollection();
-                        for (int i = 0, j = txt_Data.LineCount - 1; i < app.AutoClearLines / 4; i++, j--)
+                        for (int i = 0, j = txt_Data.LineCount - 1; i < app.AutoClearLines / 2; i++, j--)
                         {
                             lines.Add(txt_Data.GetLineText(j));
                         }
@@ -137,19 +134,34 @@ namespace E_Serial
                         lines = null;
                         Debug.WriteLine("CLEAR TextBox");
                     }
-                    if (app.Timestamp && isNewLine)
+                    if (app.Timestamp && ea.Time != null)
                     {
-                        txt_Data.AppendText(string.Format("[{0}] ", DateTime.Now.ToString("MM/dd HH:mm:ss.ffff")));
+                        txt_Data.AppendText(string.Format("[{0}] ", ((DateTime)ea.Time).ToString("MM/dd HH:mm:ss.ffff")));
                     }
                     txt_Data.AppendText(ea.Data);
-                    isNewLine = ea.isNewLine;
                     if (app.AutoScroll)
                         this.txt_Data.ScrollToEnd();
-                    Debug.WriteLine(txt_Data.LineCount);
-
                 }, System.Windows.Threading.DispatcherPriority.Background);
             }
             catch { }
+        }
+
+        private void unDataReceived(object sendor, Core.DataReceivedEventArgs ea)
+        {
+            if (IsPause) return;
+
+            if (dataQue.Count < app.AutoClearLines)
+            {
+                dataQue.Enqueue(ea);
+            }
+            else
+            {
+                for (int i = 0; i < dataQue.Count - app.AutoClearLines + 1; i++)
+                {
+                    dataQue.Dequeue();
+                }
+                dataQue.Enqueue(ea);
+            }
         }
 
         private void txt_Write_KeyDown(object sender, KeyEventArgs e)
@@ -179,18 +191,40 @@ namespace E_Serial
             mw.FlyoutPauseShow = true;
         }
 
-        private void UserControl_Loaded(object sender, RoutedEventArgs e)
+        private async void UserControl_Loaded(object sender, RoutedEventArgs e)
         {
+            await txt_Data.Dispatcher.InvokeAsync(() =>
+            {
+                if (dataQue.Count >= app.AutoClearLines)
+                {
+                    txt_Data.Clear();
+                }
+                while (dataQue.Count > 0)
+                {
+                    Core.DataReceivedEventArgs de = dataQue.Dequeue();
+                    if (app.Timestamp && de.Time != null)
+                    {
+                        txt_Data.AppendText(string.Format("[{0}] ", ((DateTime)de.Time).ToString("MM/dd HH:mm:ss.ffff")));
+                    }
+                    txt_Data.AppendText(de.Data);
+                    if (app.AutoScroll)
+                        this.txt_Data.ScrollToEnd();
+                }
+            }, System.Windows.Threading.DispatcherPriority.Loaded);
+            icc.DataReceived += dataReceived;
+            icc.DataReceived -= unDataReceived;
+            this.txt_Write.Focus();
             if (!isRun)
             {
-                icc.DataReceived += dataReceived;
+                icc.Open();
+                isRun = true;
             }
-            this.txt_Write.Focus();
         }
 
         private void UserControl_Unloaded(object sender, RoutedEventArgs e)
         {
-
+            icc.DataReceived += unDataReceived;
+            icc.DataReceived -= dataReceived;
         }
     }
 }

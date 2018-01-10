@@ -62,20 +62,20 @@ namespace E_Serial.Core
                     {
                         try
                         {
-                            DataReceived(this.tcp, new DataReceivedEventArgs() { Data = string.Format("Connect to {0}:{1}{2}", this.param.HostAddr, this.param.Port, Environment.NewLine), isNewLine = true });
+                            DataReceived(this.tcp, new DataReceivedEventArgs() { Data = string.Format("Connect to {0}:{1}{2}", this.param.HostAddr, this.param.Port, Environment.NewLine), Time = DateTime.Now });
                             this.tcp.Connect(param.HostAddr, param.Port);
                             this.Status = true;
-                            DataReceived(this.tcp, new DataReceivedEventArgs() { Data = string.Format("Connect to {0}:{1} successful!{2}", this.param.HostAddr, this.param.Port, Environment.NewLine), isNewLine = true });
+                            DataReceived(this.tcp, new DataReceivedEventArgs() { Data = string.Format("Connect to {0}:{1} successful!{2}", this.param.HostAddr, this.param.Port, Environment.NewLine), Time = DateTime.Now });
                         }
                         catch
                         {
-                            DataReceived(this.tcp, new DataReceivedEventArgs() { Data = string.Format("Connect to {0}:{1} failed: access denied{2}", this.param.HostAddr, this.param.Port, Environment.NewLine), isNewLine = true });
+                            DataReceived(this.tcp, new DataReceivedEventArgs() { Data = string.Format("Connect to {0}:{1} failed: access denied{2}", this.param.HostAddr, this.param.Port, Environment.NewLine), Time = DateTime.Now });
                         }
                     });
                     t1.Start();
                     if (!t1.Wait(10000))
                     {
-                        DataReceived(this.tcp, new DataReceivedEventArgs() { Data = string.Format("Connect to {0}:{1} failed: timeout{2}", this.param.HostAddr, this.param.Port, Environment.NewLine), isNewLine = true });
+                        DataReceived(this.tcp, new DataReceivedEventArgs() { Data = string.Format("Connect to {0}:{1} failed: timeout{2}", this.param.HostAddr, this.param.Port, Environment.NewLine), Time = DateTime.Now });
                     }
                 }
                 if (this.Status)
@@ -95,7 +95,7 @@ namespace E_Serial.Core
                                 }
                                 catch (Exception ex)
                                 {
-                                    DataReceived(this.tcp, new DataReceivedEventArgs() { Data = Encoding.ASCII.GetString(buf, 0, iBuf) + Environment.NewLine, isNewLine = true });
+                                    DataReceived(this.tcp, new DataReceivedEventArgs() { Data = Encoding.ASCII.GetString(buf, 0, iBuf) + Environment.NewLine, Time = DateTime.Now });
                                     if (this.fs != null)
                                     {
                                         await fs.WriteAsync(buf, 0, iBuf);
@@ -105,14 +105,14 @@ namespace E_Serial.Core
                                     iBuf = 0;
                                     Debug.WriteLine(ex.Message);
                                     this.Status = false;
-                                    DataReceived(this.tcp, new DataReceivedEventArgs() { Data = string.Format("Disconnect with {0}:{1}{2}", this.param.HostAddr, this.param.Port, Environment.NewLine), isNewLine = true });
+                                    DataReceived(this.tcp, new DataReceivedEventArgs() { Data = string.Format("Disconnect with {0}:{1}{2}", this.param.HostAddr, this.param.Port, Environment.NewLine), Time = DateTime.Now });
                                     break;
                                 }
                                 if (x > -1)
                                 {
                                     if (x == 10)
                                     {
-                                        DataReceived(this.tcp, new DataReceivedEventArgs() { Data = Encoding.ASCII.GetString(buf, 0, iBuf) + Environment.NewLine, isNewLine = true });
+                                        DataReceived(this.tcp, new DataReceivedEventArgs() { Data = Encoding.ASCII.GetString(buf, 0, iBuf) + Environment.NewLine, Time = DateTime.Now });
                                         if (this.fs != null)
                                         {
                                             await fs.WriteAsync(buf, 0, iBuf);
@@ -126,7 +126,7 @@ namespace E_Serial.Core
                                         buf[iBuf++] = (byte)x;
                                         if (iBuf == buf.Length)
                                         {
-                                            DataReceived(this.tcp, new DataReceivedEventArgs() { Data = Encoding.ASCII.GetString(buf, 0, iBuf), isNewLine = false });
+                                            DataReceived(this.tcp, new DataReceivedEventArgs() { Data = Encoding.ASCII.GetString(buf, 0, iBuf), Time = null });
                                             if (this.fs != null)
                                             {
                                                 await fs.WriteAsync(buf, 0, iBuf);

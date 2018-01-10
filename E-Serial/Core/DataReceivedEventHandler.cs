@@ -12,6 +12,6 @@ namespace E_Serial.Core
     {
         public string Data { set; get; }
 
-        public bool isNewLine { set; get; }
+        public DateTime? Time { set; get; }
     }
 }
