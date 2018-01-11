@@ -41,7 +41,7 @@ namespace Test
                             try
                             {
                                 s.Send(Encoding.UTF8.GetBytes(string.Format("[{0}] {1}", iq++.ToString(), data)));
-                                Thread.Sleep(100);
+                                Thread.Sleep(1000);
                             }
                             catch { Console.WriteLine("{0} DISN!", t.ID); iq = 0; break; }
                             if (iq >= int.MaxValue)

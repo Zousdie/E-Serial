@@ -121,17 +121,13 @@ namespace E_Serial
 
                     if (app.AutoClear && txt_Data.LineCount >= app.AutoClearLines)
                     {
-                        StringCollection lines = new StringCollection();
-                        for (int i = 0, j = txt_Data.LineCount - 1; i < app.AutoClearLines / 2; i++, j--)
+                        StringBuilder lines = new StringBuilder();
+                        for (int i = txt_Data.LineCount - app.AutoClearLines / 3; i < txt_Data.LineCount; i++)
                         {
-                            lines.Add(txt_Data.GetLineText(j));
+                            lines.Append(txt_Data.GetLineText(i));
                         }
                         txt_Data.Clear();
-                        for (int i = lines.Count - 1; i > -1; i--)
-                        {
-                            txt_Data.AppendText(lines[i]);
-                        }
-                        lines = null;
+                        txt_Data.AppendText(lines.ToString());
                         Debug.WriteLine("CLEAR TextBox");
                     }
                     if (app.Timestamp && ea.Time != null)
@@ -195,22 +191,24 @@ namespace E_Serial
         {
             await txt_Data.Dispatcher.InvokeAsync(() =>
             {
-                if (dataQue.Count >= app.AutoClearLines)
+                if (dataQue.Count + txt_Data.LineCount >= app.AutoClearLines)
                 {
                     txt_Data.Clear();
                 }
+                StringBuilder sbuf = new StringBuilder(dataQue.Count);
                 while (dataQue.Count > 0)
                 {
                     Core.DataReceivedEventArgs de = dataQue.Dequeue();
                     if (app.Timestamp && de.Time != null)
                     {
-                        txt_Data.AppendText(string.Format("[{0}] ", ((DateTime)de.Time).ToString("MM/dd HH:mm:ss.ffff")));
+                        sbuf.AppendFormat("[{0}] ", ((DateTime)de.Time).ToString("MM/dd HH:mm:ss.ffff"));
                     }
-                    txt_Data.AppendText(de.Data);
-                    if (app.AutoScroll)
-                        this.txt_Data.ScrollToEnd();
+                    sbuf.Append(de.Data);
                 }
-            }, System.Windows.Threading.DispatcherPriority.Loaded);
+                txt_Data.AppendText(sbuf.ToString());
+                if (app.AutoScroll)
+                    this.txt_Data.ScrollToEnd();
+            }, System.Windows.Threading.DispatcherPriority.Background);
             icc.DataReceived += dataReceived;
             icc.DataReceived -= unDataReceived;
             this.txt_Write.Focus();

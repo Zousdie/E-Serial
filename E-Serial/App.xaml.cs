@@ -21,6 +21,7 @@ namespace E_Serial
         private string tcpHost;
         private int tcpPort;
         private string version;
+        private int maxLines;
         private Configuration config;
 
         public bool AutoScroll
@@ -123,10 +124,24 @@ namespace E_Serial
 
         public string Version { get { return version; } }
 
+        public int MaxLines
+        {
+            set
+            {
+                this.maxLines = value;
+                config.AppSettings.Settings["MaxLines"].Value = value.ToString();
+            }
+            get
+            {
+                return this.maxLines;
+            }
+        }
+
         public App()
         {
             try
             {
+                this.maxLines = Convert.ToInt32(ConfigurationManager.AppSettings["MaxLines"]);
                 this.autoScroll = Convert.ToBoolean(ConfigurationManager.AppSettings["AutoScroll"]);
                 this.autoClear = Convert.ToBoolean(ConfigurationManager.AppSettings["AutoClear"]);
                 this.autoClearLines = Convert.ToInt32(ConfigurationManager.AppSettings["AutoClearLines"]);
